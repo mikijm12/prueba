@@ -1,4 +1,6 @@
 {
+ "id": "ep1",
+ "ingenito": "robot",
  "fps": 30,
  "durationInFrames": 1049,
  "segments": [

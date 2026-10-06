@@ -1,0 +1,242 @@
+{
+ "id": "ep2",
+ "fps": 30,
+ "durationInFrames": 1241,
+ "ingenito": "hex",
+ "segments": [
+  {
+   "cam": "JUN",
+   "juniorPose": "phone",
+   "juniorBrow": -1,
+   "lookUpAt": 0.55,
+   "expr": "happy",
+   "from": 0,
+   "to": 148
+  },
+  {
+   "cam": "WIDE",
+   "overlay": "chat",
+   "from": 148,
+   "to": 316,
+   "overlayFrom": 148
+  },
+  {
+   "cam": "ING",
+   "expr": "skeptic",
+   "from": 316,
+   "to": 341
+  },
+  {
+   "cam": "JUN",
+   "juniorPose": "phone",
+   "juniorBrow": -1,
+   "lookUpAt": 0,
+   "from": 341,
+   "to": 431
+  },
+  {
+   "cam": "ING_CLOSE",
+   "expr": "deadpan",
+   "rightArm": "up",
+   "from": 431,
+   "to": 568
+  },
+  {
+   "cam": "ING",
+   "expr": "happy",
+   "book": true,
+   "overlay": "manual",
+   "from": 568,
+   "to": 703,
+   "overlayFrom": 622
+  },
+  {
+   "cam": "JUN",
+   "juniorPose": "phone",
+   "overlay": "chat",
+   "from": 703,
+   "to": 852,
+   "overlayFrom": 703
+  },
+  {
+   "cam": "ING_CLOSE",
+   "expr": "wink",
+   "rightArm": "thumbs",
+   "from": 852,
+   "to": 889
+  },
+  {
+   "cam": "WIDE",
+   "overlay": "chat",
+   "from": 889,
+   "to": 1003,
+   "overlayFrom": 889
+  },
+  {
+   "cam": "ING_CLOSE",
+   "expr": "worried",
+   "rightArm": "stop",
+   "from": 1003,
+   "to": 1018
+  },
+  {
+   "cam": "ING_CLOSE",
+   "expr": "worried",
+   "rightArm": "stop",
+   "from": 1018,
+   "to": 1048
+  },
+  {
+   "cam": "WIDE_END",
+   "expr": "happy",
+   "rightArm": "thumbs",
+   "overlay": "end-rne",
+   "from": 1048,
+   "to": 1240,
+   "overlayFrom": 1048
+  }
+ ],
+ "lines": [
+  {
+   "who": "junior",
+   "text": "Ingenito… el cliente me escribió. A las once de la noche.",
+   "from": 24,
+   "to": 148
+  },
+  {
+   "who": "ingenito",
+   "text": "¿Qué columna?",
+   "from": 316,
+   "to": 341
+  },
+  {
+   "who": "junior",
+   "text": "La del medio. La que sostiene… todo.",
+   "from": 341,
+   "to": 431
+  },
+  {
+   "who": "ingenito",
+   "text": "Dile que sí puede sacarla. Junto con los tres pisos de arriba.",
+   "from": 431,
+   "to": 568
+  },
+  {
+   "who": "ingenito",
+   "text": "Mejor respóndele con la norma. Dibujada.",
+   "from": 568,
+   "to": 703
+  },
+  {
+   "who": "junior",
+   "text": "Estimado: según la norma E.060, esa columna no se puede retirar.",
+   "from": 703,
+   "to": 852
+  },
+  {
+   "who": "ingenito",
+   "text": "Bien.",
+   "from": 852,
+   "to": 889
+  },
+  {
+   "who": "ingenito",
+   "text": "¡No!",
+   "from": 1003,
+   "to": 1018
+  },
+  {
+   "who": "caption",
+   "text": "( grillos )",
+   "from": 1018,
+   "to": 1048
+  },
+  {
+   "who": "ingenito",
+   "text": "Para cada consultita: el RNE vigente… dibujado.",
+   "from": 1057,
+   "to": 1240
+  }
+ ],
+ "sfx": {
+  "comments": [],
+  "pings": [
+   2,
+   10,
+   20,
+   160,
+   190,
+   217,
+   247,
+   280,
+   901,
+   946
+  ],
+  "typing": [
+   [
+    703,
+    832
+   ]
+  ],
+  "sent": [
+   836
+  ],
+  "manualIn": 622,
+  "crickets": [
+   1018,
+   1048
+  ],
+  "endIn": 1048
+ },
+ "chat": [
+  {
+   "frame": 160,
+   "from": "client",
+   "time": "11:47 p. m.",
+   "text": "Ingeniero, una consultita nomás 🙏"
+  },
+  {
+   "frame": 190,
+   "from": "client",
+   "time": "11:47 p. m.",
+   "text": "¿Podemos sacar esta columna? Me estorba para la cochera 🚗"
+  },
+  {
+   "frame": 217,
+   "from": "client",
+   "time": "11:47 p. m.",
+   "photo": true
+  },
+  {
+   "frame": 247,
+   "from": "client",
+   "time": "11:47 p. m.",
+   "text": "Mi sobrino estudió 2 ciclos de arquitectura y dice que no pasa nada"
+  },
+  {
+   "frame": 280,
+   "from": "client",
+   "time": "11:47 p. m.",
+   "text": "Ah, y el pago la otra semana, sin falta 👍"
+  },
+  {
+   "frame": 703,
+   "from": "me",
+   "time": "11:52 p. m.",
+   "text": "Estimado: según la Norma E.060 (Concreto Armado), esa columna no se puede retirar. 📘",
+   "typedEnd": 832
+  },
+  {
+   "frame": 901,
+   "from": "client",
+   "time": "11:53 p. m.",
+   "text": "Ok ingeniero 👍"
+  },
+  {
+   "frame": 946,
+   "from": "client",
+   "time": "11:54 p. m.",
+   "text": "Última consultita: ¿y si le aumentamos un piso? Total la columna ya está 😅"
+  }
+ ]
+}

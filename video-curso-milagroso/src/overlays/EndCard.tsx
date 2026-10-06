@@ -1,13 +1,13 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, spring, useVideoConfig} from 'remotion';
-import {segmentWithOverlay} from '../shots';
+import {useEp} from '../episode';
 
 const FONT = 'Inter, sans-serif';
 
 export const EndCard: React.FC<{frame: number}> = ({frame}) => {
 	const {fps} = useVideoConfig();
-	const seg = segmentWithOverlay('end')!;
-	if (frame < seg.from) return null;
+	const seg = useEp().segmentWithOverlay('end');
+	if (!seg || frame < seg.from) return null;
 	const local = frame - seg.from;
 	const a = spring({frame: local - 4, fps, config: {damping: 14}});
 	const b = spring({frame: local - 14, fps, config: {damping: 14}});

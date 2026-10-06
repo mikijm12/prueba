@@ -13,7 +13,7 @@ const MOUTH = '#8a1c2c';
 const TONGUE = '#f2727f';
 
 export type HexExpression = 'happy' | 'wink' | 'worried' | 'deadpan' | 'skeptic' | 'surprised';
-export type HexArm = 'down' | 'wave' | 'point' | 'thumbs' | 'stop' | 'book' | 'hip';
+export type HexArm = 'down' | 'wave' | 'point' | 'thumbs' | 'stop' | 'book' | 'hip' | 'up';
 
 const BODY_Y = 0.98; // centro del hexágono
 const R = 0.52; // radio del hexágono (vértice arriba)
@@ -87,6 +87,9 @@ const armPose = (pose: HexArm, side: number): ArmPose => {
 			return {shoulder: [0, 0, side * 2.0], elbow: side * 0.9, hand: 'open'};
 		case 'stop':
 			return {shoulder: [-0.35, 0, side * 1.5], elbow: side * 1.3, hand: 'open'};
+		case 'up':
+			// señala hacia arriba (los pisos de arriba)
+			return {shoulder: [-0.1, 0, side * 2.3], elbow: side * 0.6, hand: 'point'};
 		case 'point':
 			return {shoulder: [0, 0, side * 1.55], elbow: side * 0.15, hand: 'point'};
 		case 'thumbs':
@@ -140,31 +143,31 @@ const Eye: React.FC<{x: number; open: number; closed?: boolean; look: [number, n
 	if (closed) {
 		// ojo guiñado: arco ^
 		return (
-			<mesh position={[x, 0.05, 0.137]} rotation={[0, 0, 0]}>
+			<mesh position={[x, 0.05, 0.145]} rotation={[0, 0, 0]}>
 				<torusGeometry args={[0.06, 0.012, 8, 20, Math.PI * 0.8]} />
 				<meshBasicMaterial color={NAVY} />
 			</mesh>
 		);
 	}
 	return (
-		<group position={[x, 0.05, 0.135]} scale={[1, open, 1]}>
+		<group position={[x, 0.05, 0.142]} scale={[1, open, 1]}>
 			<mesh scale={[1, 1.15, 1]}>
 				<circleGeometry args={[0.078, 32]} />
 				<meshBasicMaterial color={NAVY} />
 			</mesh>
-			<mesh position={[0, 0, 0.001]} scale={[1, 1.15, 1]}>
+			<mesh position={[0, 0, 0.002]} scale={[1, 1.15, 1]}>
 				<circleGeometry args={[0.066, 32]} />
 				<meshBasicMaterial color="#ffffff" />
 			</mesh>
-			<mesh position={[look[0], look[1] - 0.004, 0.002]}>
+			<mesh position={[look[0], look[1] - 0.004, 0.004]}>
 				<circleGeometry args={[0.045, 32]} />
 				<meshBasicMaterial color="#2433a6" />
 			</mesh>
-			<mesh position={[look[0], look[1] - 0.004, 0.003]}>
+			<mesh position={[look[0], look[1] - 0.004, 0.006]}>
 				<circleGeometry args={[0.027, 24]} />
 				<meshBasicMaterial color="#0b1240" />
 			</mesh>
-			<mesh position={[look[0] + 0.016, look[1] + 0.018, 0.004]}>
+			<mesh position={[look[0] + 0.016, look[1] + 0.018, 0.008]}>
 				<circleGeometry args={[0.013, 16]} />
 				<meshBasicMaterial color="#ffffff" />
 			</mesh>
@@ -173,14 +176,14 @@ const Eye: React.FC<{x: number; open: number; closed?: boolean; look: [number, n
 };
 
 const Brow: React.FC<{x: number; y: number; tilt: number}> = ({x, y, tilt}) => (
-	<mesh position={[x, y, 0.137]} rotation={[0, 0, Math.PI * 0.3 + tilt]}>
+	<mesh position={[x, y, 0.145]} rotation={[0, 0, Math.PI * 0.3 + tilt]}>
 		<torusGeometry args={[0.07, 0.011, 8, 20, Math.PI * 0.4]} />
 		<meshBasicMaterial color={NAVY} />
 	</mesh>
 );
 
 const Mouth: React.FC<{expr: HexExpression; open: number}> = ({expr, open}) => {
-	const z = 0.136;
+	const z = 0.142;
 	if (expr === 'deadpan' && open < 0.1) {
 		return (
 			<mesh position={[0, -0.1, z]}>
@@ -197,7 +200,7 @@ const Mouth: React.FC<{expr: HexExpression; open: number}> = ({expr, open}) => {
 					<circleGeometry args={[0.045, 24]} />
 					<meshBasicMaterial color={MOUTH} />
 				</mesh>
-				<mesh position={[0, -0.022, 0.001]} scale={[1, 0.5, 1]}>
+				<mesh position={[0, -0.022, 0.003]} scale={[1, 0.5, 1]}>
 					<circleGeometry args={[0.03, 20]} />
 					<meshBasicMaterial color={TONGUE} />
 				</mesh>
@@ -212,11 +215,11 @@ const Mouth: React.FC<{expr: HexExpression; open: number}> = ({expr, open}) => {
 				<circleGeometry args={[0.1, 32, Math.PI, Math.PI]} />
 				<meshBasicMaterial color={NAVY} />
 			</mesh>
-			<mesh position={[0, 0, 0.001]}>
+			<mesh position={[0, 0, 0.002]}>
 				<circleGeometry args={[0.088, 32, Math.PI, Math.PI]} />
 				<meshBasicMaterial color={MOUTH} />
 			</mesh>
-			<mesh position={[0, -0.058, 0.002]} scale={[1, 0.55, 1]}>
+			<mesh position={[0, -0.058, 0.004]} scale={[1, 0.55, 1]}>
 				<circleGeometry args={[0.055, 24, 0, Math.PI]} />
 				<meshBasicMaterial color={TONGUE} />
 			</mesh>
@@ -286,7 +289,7 @@ export const IngenitoHex: React.FC<{
 						<Mouth expr={expr} open={mouth} />
 					</group>
 					{[-0.25, 0.25].map((x) => (
-						<mesh key={x} position={[x, -0.1, 0.136]}>
+						<mesh key={x} position={[x, -0.1, 0.14]}>
 							<circleGeometry args={[0.065, 24]} />
 							<meshBasicMaterial color={PINK} transparent opacity={0.75} />
 						</mesh>

@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, spring, useVideoConfig} from 'remotion';
-import {segmentWithOverlay} from '../shots';
+import {useEp} from '../episode';
 
 const FONT = 'Inter, sans-serif';
 
@@ -77,8 +77,10 @@ const Scene: React.FC = () => (
 
 export const InstaPost: React.FC<{frame: number}> = ({frame}) => {
 	const {fps} = useVideoConfig();
-	const crop = segmentWithOverlay('insta-crop')!;
-	const reveal = segmentWithOverlay('insta-reveal')!;
+	const {segmentWithOverlay} = useEp();
+	const crop = segmentWithOverlay('insta-crop');
+	const reveal = segmentWithOverlay('insta-reveal');
+	if (!crop || !reveal) return null;
 	const inCrop = frame >= crop.overlayFrom! && frame < crop.to;
 	const inReveal = frame >= reveal.overlayFrom! && frame < reveal.to;
 	if (!inCrop && !inReveal) return null;

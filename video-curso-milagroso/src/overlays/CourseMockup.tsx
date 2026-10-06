@@ -1,7 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, spring, useVideoConfig} from 'remotion';
-import timeline from '../timeline.json';
-import {segmentWithOverlay} from '../shots';
+import {useEp} from '../episode';
 
 const FONT = 'Inter, sans-serif';
 
@@ -26,6 +25,7 @@ const Edificio: React.FC = () => (
 
 export const CourseMockup: React.FC<{frame: number}> = ({frame}) => {
 	const {fps} = useVideoConfig();
+	const {timeline, segmentWithOverlay} = useEp();
 	const start = timeline.sfx.mockupIn;
 	const local = frame - start;
 	const enter = spring({frame: local, fps, config: {damping: 16, stiffness: 120}});

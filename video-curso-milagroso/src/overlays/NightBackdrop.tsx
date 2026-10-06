@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 import {AbsoluteFill, random} from 'remotion';
-import {Cam} from '../shots';
+import {Cam} from '../episode';
 
 const W = 1080;
 const H = 1920;

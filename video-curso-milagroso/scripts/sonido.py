@@ -1,14 +1,14 @@
-"""Construye la línea de tiempo y la banda sonora a partir de scripts/guion.json.
+"""Construye la línea de tiempo y la banda sonora de un episodio (episodios/<ep>/guion.json).
 
 1. Sintetiza cada diálogo con las voces peruanas de Microsoft (edge-tts, es-PE-AlexNeural);
    con VOCES=kokoro usa en cambio voces neuronales locales (sin red).
 2. Procesa la voz: el junior un poco más agudo, Ingenito más grave con un toque metálico suave.
-3. Coloca cada beat en el tiempo y escribe src/timeline.json (planos, subtítulos,
-   efectos) y src/mouth.json (apertura de boca por fotograma, sacada del audio real).
-4. Mezcla voces + música lo-fi (con ducking) + efectos en public/audio.wav,
+3. Coloca cada beat en el tiempo y escribe src/episodios/<ep>/timeline.json (planos,
+   subtítulos, chat, efectos) y mouth.json (apertura de boca por fotograma, del audio real).
+4. Mezcla voces + música lo-fi (con ducking) + efectos en public/<ep>/audio.wav,
    que la composición de Remotion reproduce con <Audio>.
 
-Uso: .venv/bin/python -I scripts/sonido.py   (desde la carpeta del proyecto)
+Uso: .venv/bin/python -I scripts/sonido.py ep2   (lee episodios/ep2/guion.json)
 """
 import json
 import os
@@ -71,11 +71,12 @@ def trim_silence(x, thr=0.01):
 # ---------- voces ----------
 
 # Voces peruanas de Microsoft (las mismas de la skill de videos CIngeniería).
-# Ingenito usa la misma voz masculina, más grave y con toque robot, para diferenciarlo.
+# Cada guion puede ajustarlas en "voces"; estas son las del episodio 1.
 EDGE_VOICES = {
     "junior": {"voice": "es-PE-AlexNeural", "rate": "+18%", "pitch": "+6Hz"},
-    "ingenito": {"voice": "es-PE-AlexNeural", "rate": "+8%", "pitch": "-14Hz"},
+    "ingenito": {"voice": "es-PE-AlexNeural", "rate": "+8%", "pitch": "-14Hz", "robot": True},
 }
+VOICES = dict(EDGE_VOICES)
 # Respaldo local si no hay red: VOCES=kokoro
 KOKORO_VOICES = {"junior": ("em_alex", 1.1, 1.04), "ingenito": ("em_santa", 1.0, 0.95)}
 _kokoro = None
@@ -92,7 +93,7 @@ def synth_edge(text, who, path):
     ca = os.environ.get("SSL_CERT_FILE") or "/root/.ccr/ca-bundle.crt"
     if os.path.exists(ca):
         comm._SSL_CTX = ssl.create_default_context(cafile=ca)
-    cfg = EDGE_VOICES[who]
+    cfg = VOICES[who]
     proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
     com = edge_tts.Communicate(text, cfg["voice"], rate=cfg["rate"], pitch=cfg["pitch"], proxy=proxy)
     asyncio.run(com.save(path))
@@ -130,7 +131,7 @@ def synth(text, who, tmp):
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-ar", str(SR), "-ac", "1", out], check=True)
     x, _ = read_wav(out)
     x = trim_silence(x)
-    if who == "ingenito":
+    if VOICES[who].get("robot"):
         x = robotize(x)
     return x / max(1e-6, np.abs(x).max()) * 0.9
 
@@ -204,6 +205,26 @@ def sting(dur=1.6):
     return s * np.exp(-t * 2.2) * env(n, 0.01, 0.3)
 
 
+def ping():
+    """Notificación de mensaje (dos tonos cortos)."""
+    out = np.zeros(int(0.32 * SR))
+    for i, f in enumerate((1318.5, 1760.0)):
+        m = int(0.14 * SR)
+        t = np.arange(m) / SR
+        place(out, np.sin(2 * np.pi * f * t) * np.exp(-t * 28), i * 0.11)
+    return out
+
+
+def typing(dur):
+    """Tecleo en el celular: clics cortos irregulares."""
+    out = np.zeros(int(dur * SR) + SR // 10)
+    t = 0.0
+    while t < dur:
+        place(out, click(0.025) * rng.uniform(0.4, 0.8), t)
+        t += rng.uniform(0.07, 0.16)
+    return out
+
+
 def lofi(total):
     n = int(total * SR)
     out = np.zeros(n)
@@ -234,10 +255,12 @@ def lofi(total):
 
 # ---------- armado ----------
 
-def main():
-    g = json.load(open(os.path.join(ROOT, "scripts/guion.json")))
+def main(ep):
+    global VOICES
+    g = json.load(open(os.path.join(ROOT, "episodios", ep, "guion.json")))
     fps = g["fps"]
     gap = g["gap"]
+    VOICES = {**EDGE_VOICES, **g.get("voces", {})}
 
     clips = []
     with tempfile.TemporaryDirectory() as tmp:
@@ -245,28 +268,51 @@ def main():
             clips.append(synth(b["say"], b["who"], tmp) if b["type"] == "line" else None)
 
     t = 0.0
-    segments, lines, voice_places = [], [], []
-    sfx = {"comments": []}
+    segments, lines, voice_places, chat = [], [], [], []
+    sfx = {"comments": [], "pings": [], "typing": [], "sent": []}
     for b, clip in zip(g["beats"], clips):
         start = t
+        lead = b.get("lead", 0)
+        talk = 0.0
         if b["type"] == "line":
             talk = len(clip) / SR
-            dur = talk + b.get("tail", 0) + gap
-            voice_places.append((b["who"], clip, start))
+            dur = lead + talk + b.get("tail", 0) + gap
+            voice_places.append((b["who"], clip, start + lead))
             lines.append({
                 "who": b["who"], "text": b["text"],
-                "from": round(start * fps), "to": round((start + dur) * fps),
+                "from": round((start + lead) * fps), "to": round((start + dur) * fps),
             })
         else:
             dur = b["dur"]
             if "caption" in b:
                 lines.append({"who": "caption", "text": b["caption"], "from": round(start * fps), "to": round((start + dur) * fps)})
         f0, f1 = round(start * fps), round((start + dur) * fps)
-        seg = {k: v for k, v in b.items() if k not in ("type", "text", "say", "who", "dur", "tail", "caption", "sfx", "overlayFrom")}
+        skip = ("type", "text", "say", "who", "dur", "tail", "caption", "sfx", "overlayFrom", "lead", "chat", "pings")
+        seg = {k: v for k, v in b.items() if k not in skip}
         seg.update({"from": f0, "to": f1})
         if "overlay" in b:
             seg["overlayFrom"] = f0 + round(b.get("overlayFrom", 0) * (f1 - f0))
         segments.append(seg)
+
+        # mensajes de WhatsApp: "at" en segundos desde el inicio del beat
+        for m in b.get("chat", []):
+            frame = round((start + m.get("at", 0)) * fps)
+            msg = {"frame": frame, "from": m["from"], "time": m.get("time", "11:47 p. m.")}
+            if "text" in m:
+                msg["text"] = m["text"]
+            if m.get("photo"):
+                msg["photo"] = True
+            if m.get("typed"):
+                # se escribe mientras el junior lo dice en voz alta
+                msg["frame"] = round((start + lead) * fps)
+                msg["typedEnd"] = round((start + lead + talk) * fps)
+                sfx["typing"].append([msg["frame"], msg["typedEnd"]])
+                sfx["sent"].append(msg["typedEnd"] + 4)
+            elif m["from"] == "client":
+                sfx["pings"].append(frame)
+            chat.append(msg)
+        for p_at in b.get("pings", []):
+            sfx["pings"].append(round((start + p_at) * fps))
 
         ov = b.get("overlay")
         if ov == "mockup":
@@ -274,13 +320,15 @@ def main():
             sfx["priceSlash"] = f0 + 30
             sfx["comments"] = [f0 + 48, f0 + 66, f0 + 84]
         elif ov == "run":
-            talk_end = f0 + round(len(clip) / SR * fps)
+            talk_end = f0 + round(talk * fps)
             sfx["runPop"] = talk_end - 10
             sfx["runClick"] = talk_end + 2
         elif ov == "insta-crop":
             sfx["instaIn"] = seg["overlayFrom"]
         elif ov == "insta-reveal":
             sfx["reveal"] = seg["overlayFrom"]
+        elif ov == "manual":
+            sfx["manualIn"] = seg["overlayFrom"]
         if b.get("sfx") == "crickets":
             sfx["crickets"] = [f0, f1]
         if b.get("sfx") == "end":
@@ -312,36 +360,62 @@ def main():
         music[a:b] = 0
 
     fx = np.zeros(n)
-    place(fx, whoosh() * 0.35, sfx["mockupIn"] / fps - 0.1)
-    place(fx, cash() * 0.3, sfx["priceSlash"] / fps)
-    for i, c in enumerate(sfx["comments"]):
-        place(fx, pop(800 + i * 150) * 0.35, c / fps)
-    mock_seg = next(s for s in segments if s.get("overlay") == "mockup")
-    place(fx, whoosh(0.3) * 0.3, (mock_seg["to"] - 6) / fps)
-    place(fx, pop(1200, 0.12) * 0.4, sfx["runPop"] / fps)
-    place(fx, click() * 0.5, sfx["runClick"] / fps)
-    a, b = sfx["crickets"]
-    place(fx, crickets((b - a) / fps) * 0.12, a / fps)
-    place(fx, pop(700, 0.12) * 0.35, sfx["instaIn"] / fps)
-    place(fx, scratch() * 0.3, sfx["reveal"] / fps)
-    place(fx, sting() * 0.25, sfx["endIn"] / fps)
+    at = lambda f: f / fps  # noqa: E731
+    if "mockupIn" in sfx:
+        place(fx, whoosh() * 0.35, at(sfx["mockupIn"]) - 0.1)
+        place(fx, cash() * 0.3, at(sfx["priceSlash"]))
+        for i, c in enumerate(sfx["comments"]):
+            place(fx, pop(800 + i * 150) * 0.35, at(c))
+        mock_seg = next(s for s in segments if s.get("overlay") == "mockup")
+        place(fx, whoosh(0.3) * 0.3, at(mock_seg["to"] - 6))
+    if "runPop" in sfx:
+        place(fx, pop(1200, 0.12) * 0.4, at(sfx["runPop"]))
+        place(fx, click() * 0.5, at(sfx["runClick"]))
+    if "crickets" in sfx:
+        a, b = sfx["crickets"]
+        place(fx, crickets(at(b - a)) * 0.12, at(a))
+    if "instaIn" in sfx:
+        place(fx, pop(700, 0.12) * 0.35, at(sfx["instaIn"]))
+        place(fx, scratch() * 0.3, at(sfx["reveal"]))
+    if "manualIn" in sfx:
+        place(fx, whoosh(0.35) * 0.3, at(sfx["manualIn"]) - 0.1)
+    for p_ in sfx["pings"]:
+        place(fx, ping() * 0.3, at(p_))
+    for a, b in sfx["typing"]:
+        place(fx, typing(at(b - a)) * 0.25, at(a))
+    for s_ in sfx["sent"]:
+        place(fx, pop(1500, 0.08) * 0.3, at(s_))
+    # entrada del chat
+    for s in segments:
+        if s.get("overlay") == "chat" and not any(p.get("overlay") == "chat" and p["to"] == s["from"] for p in segments):
+            place(fx, whoosh(0.3) * 0.25, at(s["from"]) - 0.05)
+    if "endIn" in sfx:
+        place(fx, sting() * 0.25, at(sfx["endIn"]))
 
     mix = voices * 0.9 + music + fx
     mix /= max(1.0, np.abs(mix).max() / 0.89)
     pcm = (mix * 32767).astype(np.int16)
-    with wave.open(os.path.join(ROOT, "public/audio.wav"), "wb") as w:
+    os.makedirs(os.path.join(ROOT, "public", ep), exist_ok=True)
+    with wave.open(os.path.join(ROOT, "public", ep, "audio.wav"), "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes(np.stack([pcm, pcm], axis=1).tobytes())
 
-    timeline = {"fps": fps, "durationInFrames": n_frames, "segments": segments, "lines": lines, "sfx": sfx}
-    json.dump(timeline, open(os.path.join(ROOT, "src/timeline.json"), "w"), ensure_ascii=False, indent=1)
-    json.dump(mouth, open(os.path.join(ROOT, "src/mouth.json"), "w"))
-    print(f"duración: {total:.2f} s ({n_frames} fotogramas)")
+    timeline = {
+        "id": ep, "fps": fps, "durationInFrames": n_frames, "ingenito": g.get("ingenito", "robot"),
+        "segments": segments, "lines": lines, "sfx": sfx, "chat": chat,
+    }
+    out_dir = os.path.join(ROOT, "src", "episodios", ep)
+    os.makedirs(out_dir, exist_ok=True)
+    json.dump(timeline, open(os.path.join(out_dir, "timeline.json"), "w"), ensure_ascii=False, indent=1)
+    json.dump(mouth, open(os.path.join(out_dir, "mouth.json"), "w"))
+    print(f"{ep}: duración {total:.2f} s ({n_frames} fotogramas)")
     for s in segments:
         print(f"  {s['from']:4d}-{s['to']:4d}  {s['cam']:9s} {s.get('overlay', '')}")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    main(sys.argv[1] if len(sys.argv) > 1 else "ep1")

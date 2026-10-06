@@ -1,17 +1,19 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
-import timeline from '../timeline.json';
-import {segmentAt} from '../shots';
+import {useEp} from '../episode';
 
 export const Subtitles: React.FC<{frame: number}> = ({frame}) => {
+	const {timeline, segmentAt} = useEp();
 	const line = timeline.lines.find((l) => frame >= l.from && frame < l.to);
 	if (!line) return null;
 	const caption = line.who === 'caption';
 	const seg = segmentAt(frame);
 	// sube el subtítulo cuando la tarjeta de Instagram ocupa la pantalla
-	const overCard = seg.overlay?.startsWith('insta') && frame >= (seg.overlayFrom ?? seg.from);
+	if (seg.overlay === 'end-rne') return null;
+	const overCard =
+		(seg.overlay?.startsWith('insta') || seg.overlay === 'chat' || seg.overlay === 'manual') && frame >= (seg.overlayFrom ?? seg.from);
 	return (
-		<AbsoluteFill style={{alignItems: 'center', top: overCard ? 150 : 320}}>
+		<AbsoluteFill style={{alignItems: 'center', top: overCard ? 120 : 320}}>
 			<div
 				style={{
 					maxWidth: 860,

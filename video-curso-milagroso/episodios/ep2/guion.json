@@ -1,0 +1,189 @@
+{
+  "ingenito": "hex",
+  "fps": 30,
+  "gap": 0.18,
+  "voces": {
+    "junior": {
+      "voice": "es-PE-AlexNeural",
+      "rate": "+22%",
+      "pitch": "+6Hz"
+    },
+    "ingenito": {
+      "voice": "es-PE-AlexNeural",
+      "rate": "+12%",
+      "pitch": "-10Hz"
+    }
+  },
+  "beats": [
+    {
+      "type": "line",
+      "who": "junior",
+      "text": "Ingenito… el cliente me escribió. A las once de la noche.",
+      "say": "Ingenito, el cliente me escribió. A las once de la noche.",
+      "cam": "JUN",
+      "juniorPose": "phone",
+      "juniorBrow": -1,
+      "lookUpAt": 0.55,
+      "lead": 0.8,
+      "pings": [
+        0.05,
+        0.35,
+        0.65
+      ],
+      "expr": "happy"
+    },
+    {
+      "type": "still",
+      "dur": 5.6,
+      "cam": "WIDE",
+      "overlay": "chat",
+      "chat": [
+        {
+          "from": "client",
+          "text": "Ingeniero, una consultita nomás 🙏",
+          "at": 0.4
+        },
+        {
+          "from": "client",
+          "text": "¿Podemos sacar esta columna? Me estorba para la cochera 🚗",
+          "at": 1.4
+        },
+        {
+          "from": "client",
+          "photo": true,
+          "at": 2.3
+        },
+        {
+          "from": "client",
+          "text": "Mi sobrino estudió 2 ciclos de arquitectura y dice que no pasa nada",
+          "at": 3.3
+        },
+        {
+          "from": "client",
+          "text": "Ah, y el pago la otra semana, sin falta 👍",
+          "at": 4.4
+        }
+      ]
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "¿Qué columna?",
+      "say": "¿Qué columna?",
+      "cam": "ING",
+      "expr": "skeptic"
+    },
+    {
+      "type": "line",
+      "who": "junior",
+      "text": "La del medio. La que sostiene… todo.",
+      "say": "La del medio. La que sostiene... todo.",
+      "cam": "JUN",
+      "juniorPose": "phone",
+      "juniorBrow": -1,
+      "lookUpAt": 0
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "Dile que sí puede sacarla. Junto con los tres pisos de arriba.",
+      "say": "Dile que sí puede sacarla. Junto con los tres pisos de arriba.",
+      "cam": "ING_CLOSE",
+      "expr": "deadpan",
+      "rightArm": "up",
+      "tail": 0.3
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "Mejor respóndele con la norma. Dibujada.",
+      "say": "Mejor respóndele con la norma. Dibujada.",
+      "cam": "ING",
+      "expr": "happy",
+      "book": true,
+      "overlay": "manual",
+      "overlayFrom": 0.4,
+      "tail": 1.2
+    },
+    {
+      "type": "line",
+      "who": "junior",
+      "text": "Estimado: según la norma E.060, esa columna no se puede retirar.",
+      "say": "Estimado: según la norma E cero sesenta, esa columna no se puede retirar.",
+      "cam": "JUN",
+      "juniorPose": "phone",
+      "overlay": "chat",
+      "tail": 0.5,
+      "chat": [
+        {
+          "from": "me",
+          "text": "Estimado: según la Norma E.060 (Concreto Armado), esa columna no se puede retirar. 📘",
+          "typed": true,
+          "time": "11:52 p. m."
+        }
+      ]
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "Bien.",
+      "say": "Bien.",
+      "cam": "ING_CLOSE",
+      "expr": "wink",
+      "rightArm": "thumbs",
+      "tail": 0.6
+    },
+    {
+      "type": "still",
+      "dur": 3.8,
+      "cam": "WIDE",
+      "overlay": "chat",
+      "chat": [
+        {
+          "from": "client",
+          "text": "Ok ingeniero 👍",
+          "at": 0.4,
+          "time": "11:53 p. m."
+        },
+        {
+          "from": "client",
+          "text": "Última consultita: ¿y si le aumentamos un piso? Total la columna ya está 😅",
+          "at": 1.9,
+          "time": "11:54 p. m."
+        }
+      ]
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "¡No!",
+      "say": "¡No!",
+      "cam": "ING_CLOSE",
+      "expr": "worried",
+      "rightArm": "stop",
+      "tail": 0.0
+    },
+    {
+      "type": "still",
+      "dur": 1.0,
+      "cam": "ING_CLOSE",
+      "expr": "worried",
+      "rightArm": "stop",
+      "caption": "( grillos )",
+      "sfx": "crickets"
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "Para cada consultita: el RNE vigente… dibujado.",
+      "say": "Para cada consultita: el erre ene e vigente... dibujado.",
+      "cam": "WIDE_END",
+      "expr": "happy",
+      "rightArm": "thumbs",
+      "overlay": "end-rne",
+      "lead": 0.3,
+      "tail": 2.4,
+      "sfx": "end"
+    }
+  ]
+}
