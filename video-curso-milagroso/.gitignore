@@ -1,3 +1,5 @@
 node_modules/
+.venv/
+voices/
 out/*
-!out/curso-milagroso-prueba.mp4
+!out/curso-milagroso-30s.mp4

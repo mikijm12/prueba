@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, spring, useVideoConfig} from 'remotion';
 import timeline from '../timeline.json';
+import {segmentWithOverlay} from '../shots';
 
 const FONT = 'Inter, sans-serif';
 
@@ -28,7 +29,8 @@ export const CourseMockup: React.FC<{frame: number}> = ({frame}) => {
 	const start = timeline.sfx.mockupIn;
 	const local = frame - start;
 	const enter = spring({frame: local, fps, config: {damping: 16, stiffness: 120}});
-	const exit = interpolate(frame, [178, 184], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+	const end = segmentWithOverlay('mockup')!.to;
+	const exit = interpolate(frame, [end - 6, end], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 	const slash = interpolate(frame, [timeline.sfx.priceSlash, timeline.sfx.priceSlash + 6], [0, 1], {
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',

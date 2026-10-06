@@ -6,19 +6,22 @@ const JOINT = '#9aa0ab';
 const HAT = '#ffc21a';
 const EYE = '#e8f6ff';
 
-export type IngenitoEyes = 'normal' | 'skeptic' | 'deadpan';
+export type IngenitoEyes = 'normal' | 'skeptic' | 'deadpan' | 'happy';
 
 export const Ingenito: React.FC<{
 	frame: number;
 	mouth: number;
 	talking: boolean;
+	talk: number;
 	eyes: IngenitoEyes;
-}> = ({frame, mouth, talking, eyes}) => {
+}> = ({frame, mouth, talking, talk, eyes}) => {
 	const t = frame / 30;
 	const hover = Math.sin(t * 1.8) * 0.006;
 	const headTilt = talking ? Math.sin(t * 9) * 0.03 : eyes === 'skeptic' ? 0.08 : 0;
 	const blink = eyes === 'normal' && frame % 110 > 105 ? 0.12 : 1;
 	const beacon = 0.6 + 0.4 * Math.max(0, Math.sin(t * 7));
+	// gesto con la mano derecha mientras habla
+	const gesture = 0.05 - talk * (0.4 + 0.2 * Math.sin(t * 5));
 
 	const eyeH = (side: number) => {
 		if (eyes === 'deadpan') return 0.03;
@@ -55,7 +58,7 @@ export const Ingenito: React.FC<{
 					<meshStandardMaterial color="#3d74c9" roughness={0.7} flatShading />
 				</mesh>
 			</group>
-			<group position={[0.41, 1.34 + hover, 0]} rotation={[0.05, 0, 0.1]}>
+			<group position={[0.41, 1.34 + hover, 0]} rotation={[gesture, 0, 0.1]}>
 				<Box position={[0, -0.05, 0]} size={[0.12, 0.12, 0.12]} color={JOINT} />
 				<Box position={[0, -0.33, 0]} size={[0.17, 0.5, 0.19]} color={BODY} />
 				<Box position={[0, -0.63, 0]} size={[0.15, 0.12, 0.17]} color={JOINT} />
@@ -67,11 +70,19 @@ export const Ingenito: React.FC<{
 			<group position={[0, 1.49 + hover, 0]} rotation={[0, 0, headTilt]}>
 				<Box position={[0, 0.33, 0]} size={[0.82, 0.62, 0.6]} color={BODY} roughness={0.5} />
 				<Box position={[0, 0.33, 0.3]} size={[0.7, 0.5, 0.02]} color="#0b0f1a" roughness={0.95} />
-				{[-0.15, 0.15].map((x) => (
-					<Box key={x} position={[x, 0.38, 0.315]} size={[eyeW, eyeH(x), 0.01]} color={EYE} emissive={EYE} emissiveIntensity={2.4} />
-				))}
+				{[-0.15, 0.15].map((x) =>
+					eyes === 'happy' ? (
+						// ojos felices: ^ ^
+						<group key={x} position={[x, 0.38, 0.315]}>
+							<Box position={[-0.04, -0.01, 0]} rotation={[0, 0, 0.7]} size={[0.11, 0.035, 0.01]} color={EYE} emissive={EYE} emissiveIntensity={2.4} />
+							<Box position={[0.04, -0.01, 0]} rotation={[0, 0, -0.7]} size={[0.11, 0.035, 0.01]} color={EYE} emissive={EYE} emissiveIntensity={2.4} />
+						</group>
+					) : (
+						<Box key={x} position={[x, 0.38, 0.315]} size={[eyeW, eyeH(x), 0.01]} color={EYE} emissive={EYE} emissiveIntensity={2.4} />
+					)
+				)}
 				<Box position={[0, 0.2, 0.315]} size={[0.14, 0.03 + mouth * 0.07, 0.01]} color={EYE} emissive={EYE} emissiveIntensity={2.4} />
-								{[-0.43, 0.43].map((x) => (
+				{[-0.43, 0.43].map((x) => (
 					<mesh key={x} position={[x, 0.33, 0]} rotation={[0, 0, Math.PI / 2]}>
 						<cylinderGeometry args={[0.08, 0.08, 0.06, 12]} />
 						<meshStandardMaterial color={JOINT} flatShading />

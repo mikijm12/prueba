@@ -1,0 +1,19 @@
+{
+  "fps": 30,
+  "gap": 0.18,
+  "beats": [
+    { "type": "line", "who": "junior", "text": "Ingenito, ¿compro este curso?", "say": "Ingenito, ¿compro este curso?", "cam": "JUN", "juniorPose": "phone", "lookUpAt": 0.6 },
+    { "type": "still", "dur": 3.6, "cam": "WIDE", "overlay": "mockup" },
+    { "type": "line", "who": "ingenito", "text": "¿Y qué te enseña?", "say": "¿Y qué te enseña?", "cam": "ING", "ingenitoEyes": "skeptic" },
+    { "type": "line", "who": "junior", "text": "A apretar «Run».", "say": "A apretar ran.", "cam": "JUN_LOW", "juniorPose": "proud", "juniorSmile": 1, "juniorBrow": 1, "overlay": "run", "tail": 0.5 },
+    { "type": "still", "dur": 0.9, "cam": "ING_CLOSE", "ingenitoEyes": "deadpan", "caption": "( grillos )", "sfx": "crickets" },
+    { "type": "line", "who": "ingenito", "text": "Eso te lo enseño yo. Gratis. Es el botón verde.", "say": "Eso te lo enseño yo. Gratis. Es el botón verde.", "cam": "ING" },
+    { "type": "line", "who": "junior", "text": "Pero dice que en 3 días diseño un edificio de 20 pisos.", "say": "Pero dice que en tres días, diseño un edificio de veinte pisos.", "cam": "JUN", "juniorPose": "phone", "juniorBrow": 1 },
+    { "type": "line", "who": "ingenito", "text": "En 3 días la municipalidad ni te contesta el correo.", "say": "En tres días, la municipalidad ni te contesta el correo.", "cam": "ING_CLOSE", "ingenitoEyes": "deadpan" },
+    { "type": "line", "who": "junior", "text": "…Ok. No lo compro.", "say": "Ok. No lo compro.", "cam": "TWO", "juniorPose": "phone", "juniorBrow": -1 },
+    { "type": "line", "who": "ingenito", "text": "Bien.", "say": "Bien.", "cam": "TWO", "juniorPose": "phone", "juniorBrow": -1, "ingenitoEyes": "happy", "tail": 0.3 },
+    { "type": "line", "who": "junior", "text": "Pero el profe sale posando frente a su edificio…", "say": "Pero el profe sale posando frente a su edificio.", "cam": "JUN_LOW", "juniorPose": "proud", "juniorSmile": 0.5, "overlay": "insta-crop", "overlayFrom": 0.35, "tail": 0.5 },
+    { "type": "line", "who": "ingenito", "text": "Es un centro comercial. Fue a comprar.", "say": "Es un centro comercial. Fue a comprar.", "cam": "ING_CLOSE", "ingenitoEyes": "deadpan", "overlay": "insta-reveal", "overlayFrom": 0.42, "tail": 1.0, "sfx": "scratch" },
+    { "type": "still", "dur": 3.2, "cam": "WIDE_END", "ingenitoEyes": "happy", "overlay": "end", "sfx": "end" }
+  ]
+}

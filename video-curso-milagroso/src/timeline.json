@@ -1,18 +1,186 @@
 {
-  "fps": 30,
-  "durationInFrames": 300,
-  "lines": [
-    { "who": "junior", "text": "Ingenito, ¿compro este curso?", "from": 6, "to": 72, "talkEnd": 58, "syllables": 10 },
-    { "who": "ingenito", "text": "¿Y qué te enseña?", "from": 184, "to": 240, "talkEnd": 222, "syllables": 6 },
-    { "who": "junior", "text": "A apretar «Run».", "from": 242, "to": 284, "talkEnd": 266, "syllables": 5 },
-    { "who": "caption", "text": "( grillos )", "from": 284, "to": 300, "talkEnd": 284, "syllables": 0 }
-  ],
-  "sfx": {
-    "mockupIn": 74,
-    "priceSlash": 104,
-    "comments": [122, 140, 158],
-    "runPop": 268,
-    "runClick": 276,
-    "crickets": 284
+ "fps": 30,
+ "durationInFrames": 955,
+ "segments": [
+  {
+   "cam": "JUN",
+   "juniorPose": "phone",
+   "lookUpAt": 0.6,
+   "from": 0,
+   "to": 58
+  },
+  {
+   "cam": "WIDE",
+   "overlay": "mockup",
+   "from": 58,
+   "to": 166,
+   "overlayFrom": 58
+  },
+  {
+   "cam": "ING",
+   "ingenitoEyes": "skeptic",
+   "from": 166,
+   "to": 200
+  },
+  {
+   "cam": "JUN_LOW",
+   "juniorPose": "proud",
+   "juniorSmile": 1,
+   "juniorBrow": 1,
+   "overlay": "run",
+   "from": 200,
+   "to": 247,
+   "overlayFrom": 200
+  },
+  {
+   "cam": "ING_CLOSE",
+   "ingenitoEyes": "deadpan",
+   "from": 247,
+   "to": 274
+  },
+  {
+   "cam": "ING",
+   "from": 274,
+   "to": 391
+  },
+  {
+   "cam": "JUN",
+   "juniorPose": "phone",
+   "juniorBrow": 1,
+   "from": 391,
+   "to": 496
+  },
+  {
+   "cam": "ING_CLOSE",
+   "ingenitoEyes": "deadpan",
+   "from": 496,
+   "to": 598
+  },
+  {
+   "cam": "TWO",
+   "juniorPose": "phone",
+   "juniorBrow": -1,
+   "from": 598,
+   "to": 640
+  },
+  {
+   "cam": "TWO",
+   "juniorPose": "phone",
+   "juniorBrow": -1,
+   "ingenitoEyes": "happy",
+   "from": 640,
+   "to": 678
+  },
+  {
+   "cam": "JUN_LOW",
+   "juniorPose": "proud",
+   "juniorSmile": 0.5,
+   "overlay": "insta-crop",
+   "from": 678,
+   "to": 760,
+   "overlayFrom": 707
+  },
+  {
+   "cam": "ING_CLOSE",
+   "ingenitoEyes": "deadpan",
+   "overlay": "insta-reveal",
+   "from": 760,
+   "to": 858,
+   "overlayFrom": 801
+  },
+  {
+   "cam": "WIDE_END",
+   "ingenitoEyes": "happy",
+   "overlay": "end",
+   "from": 858,
+   "to": 954,
+   "overlayFrom": 858
   }
+ ],
+ "lines": [
+  {
+   "who": "junior",
+   "text": "Ingenito, ¿compro este curso?",
+   "from": 0,
+   "to": 58
+  },
+  {
+   "who": "ingenito",
+   "text": "¿Y qué te enseña?",
+   "from": 166,
+   "to": 200
+  },
+  {
+   "who": "junior",
+   "text": "A apretar «Run».",
+   "from": 200,
+   "to": 247
+  },
+  {
+   "who": "caption",
+   "text": "( grillos )",
+   "from": 247,
+   "to": 274
+  },
+  {
+   "who": "ingenito",
+   "text": "Eso te lo enseño yo. Gratis. Es el botón verde.",
+   "from": 274,
+   "to": 391
+  },
+  {
+   "who": "junior",
+   "text": "Pero dice que en 3 días diseño un edificio de 20 pisos.",
+   "from": 391,
+   "to": 496
+  },
+  {
+   "who": "ingenito",
+   "text": "En 3 días la municipalidad ni te contesta el correo.",
+   "from": 496,
+   "to": 598
+  },
+  {
+   "who": "junior",
+   "text": "…Ok. No lo compro.",
+   "from": 598,
+   "to": 640
+  },
+  {
+   "who": "ingenito",
+   "text": "Bien.",
+   "from": 640,
+   "to": 678
+  },
+  {
+   "who": "junior",
+   "text": "Pero el profe sale posando frente a su edificio…",
+   "from": 678,
+   "to": 760
+  },
+  {
+   "who": "ingenito",
+   "text": "Es un centro comercial. Fue a comprar.",
+   "from": 760,
+   "to": 858
+  }
+ ],
+ "sfx": {
+  "comments": [
+   106,
+   124,
+   142
+  ],
+  "mockupIn": 58,
+  "priceSlash": 88,
+  "runPop": 217,
+  "runClick": 229,
+  "crickets": [
+   247,
+   274
+  ],
+  "instaIn": 707,
+  "reveal": 801,
+  "endIn": 858
+ }
 }

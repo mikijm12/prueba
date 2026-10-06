@@ -1,12 +1,13 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, spring, useVideoConfig} from 'remotion';
 import timeline from '../timeline.json';
+import {segmentWithOverlay} from '../shots';
 
 // El botón "Run" de ETABS que el junior cree que es todo el curso
 export const RunButton: React.FC<{frame: number}> = ({frame}) => {
 	const {fps} = useVideoConfig();
 	const {runPop, runClick} = timeline.sfx;
-	if (frame < runPop || frame >= 284) return null;
+	if (frame < runPop || frame >= segmentWithOverlay('run')!.to) return null;
 	const pop = spring({frame: frame - runPop, fps, config: {damping: 10, stiffness: 160}});
 	const press = frame >= runClick && frame < runClick + 4 ? 0.88 : 1;
 	const cursorIn = interpolate(frame, [runPop + 2, runClick], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});

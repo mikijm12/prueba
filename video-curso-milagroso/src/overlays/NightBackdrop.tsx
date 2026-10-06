@@ -1,17 +1,19 @@
 import React, {useMemo} from 'react';
 import {AbsoluteFill, random} from 'remotion';
-import {ShotId} from '../shots';
+import {Cam} from '../shots';
 
 const W = 1080;
 const H = 1920;
 
 // Desplazamiento del fondo según el plano (paralaje falso)
-const PARALLAX: Record<ShotId, {x: number; scale: number}> = {
-	A: {x: 140, scale: 1.25},
-	B: {x: 0, scale: 1.0},
-	C: {x: -140, scale: 1.25},
-	D: {x: 120, scale: 1.15},
-	E: {x: -160, scale: 1.35},
+const PARALLAX: Record<Cam, {x: number; scale: number}> = {
+	JUN: {x: 140, scale: 1.25},
+	WIDE: {x: 0, scale: 1.0},
+	ING: {x: -140, scale: 1.25},
+	JUN_LOW: {x: 120, scale: 1.15},
+	ING_CLOSE: {x: -160, scale: 1.35},
+	TWO: {x: 0, scale: 1.1},
+	WIDE_END: {x: 0, scale: 0.95},
 };
 
 const Skyline: React.FC = () => {
@@ -88,8 +90,8 @@ const Bokeh: React.FC<{frame: number}> = ({frame}) => {
 	);
 };
 
-export const NightBackdrop: React.FC<{frame: number; shot: ShotId}> = ({frame, shot}) => {
-	const p = PARALLAX[shot];
+export const NightBackdrop: React.FC<{frame: number; cam: Cam}> = ({frame, cam}) => {
+	const p = PARALLAX[cam];
 	const craneLight = Math.sin(frame / 9) > 0 ? 1 : 0.2;
 	return (
 		<AbsoluteFill style={{background: 'linear-gradient(180deg, #040824 0%, #0a1648 45%, #17287a 75%, #0d1640 100%)', overflow: 'hidden'}}>
