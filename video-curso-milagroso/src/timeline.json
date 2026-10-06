@@ -1,0 +1,18 @@
+{
+  "fps": 30,
+  "durationInFrames": 300,
+  "lines": [
+    { "who": "junior", "text": "Ingenito, ¿compro este curso?", "from": 6, "to": 72, "talkEnd": 58, "syllables": 10 },
+    { "who": "ingenito", "text": "¿Y qué te enseña?", "from": 184, "to": 240, "talkEnd": 222, "syllables": 6 },
+    { "who": "junior", "text": "A apretar «Run».", "from": 242, "to": 284, "talkEnd": 266, "syllables": 5 },
+    { "who": "caption", "text": "( grillos )", "from": 284, "to": 300, "talkEnd": 284, "syllables": 0 }
+  ],
+  "sfx": {
+    "mockupIn": 74,
+    "priceSlash": 104,
+    "comments": [122, 140, 158],
+    "runPop": 268,
+    "runClick": 276,
+    "crickets": 284
+  }
+}

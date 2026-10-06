@@ -1,0 +1,22 @@
+{
+  "name": "video-curso-milagroso",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "audio": "python3 -I scripts/audio.py src/timeline.json out/audio.wav",
+    "render": "remotion render src/index.ts CursoMilagroso out/video-sin-audio.mp4",
+    "build": "npm run audio && npm run render && ffmpeg -y -i out/video-sin-audio.mp4 -i out/audio.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest out/curso-milagroso-prueba.mp4"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^8.18.0",
+    "@remotion/cli": "^4.0.533",
+    "@remotion/three": "^4.0.533",
+    "@types/react": "^18.3.31",
+    "@types/three": "^0.169.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.533",
+    "three": "^0.169.0",
+    "typescript": "^7.0.2"
+  }
+}
