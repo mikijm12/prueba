@@ -182,6 +182,52 @@ const Brow: React.FC<{x: number; y: number; tilt: number}> = ({x, y, tilt}) => (
 	</mesh>
 );
 
+// Boca hablando: se abre con el volumen y cambia de forma con el sonido
+// (ancha con dientes para "e/i", redonda para "o/u", abierta en "a", cerrada en "m/p/b")
+const TalkingMouth: React.FC<{open: number; shape: number; bias: number}> = ({open, shape, bias}) => {
+	const z = 0.142;
+	const sh = Math.max(-1, Math.min(1, shape + bias));
+	if (open < 0.06) {
+		return (
+			<mesh position={[0, -0.075, z]} rotation={[0, 0, Math.PI * 1.2]}>
+				<torusGeometry args={[0.06, 0.011, 8, 20, Math.PI * 0.6]} />
+				<meshBasicMaterial color={NAVY} />
+			</mesh>
+		);
+	}
+	const w = Math.max(0.62, Math.min(1.35, 1 + 0.38 * sh));
+	const h = 0.18 + open * 0.95;
+	const top = sh < 0 ? 0.18 + 0.7 * -sh : 0.18; // labio de arriba: plano en "a/e", curvo en "o"
+	const ring = (r: number, color: string, dz: number) => (
+		<>
+			<mesh position={[0, 0, dz]} scale={[1, top, 1]}>
+				<circleGeometry args={[r, 32, 0, Math.PI]} />
+				<meshBasicMaterial color={color} />
+			</mesh>
+			<mesh position={[0, 0, dz]}>
+				<circleGeometry args={[r, 32, Math.PI, Math.PI]} />
+				<meshBasicMaterial color={color} />
+			</mesh>
+		</>
+	);
+	return (
+		<group position={[0, -0.075, z]} scale={[w, h, 1]}>
+			{ring(0.085, NAVY, 0)}
+			{ring(0.072, MOUTH, 0.002)}
+			{open > 0.22 && sh > -0.35 && (
+				<mesh position={[0, -0.012, 0.004]}>
+					<planeGeometry args={[0.1, 0.022]} />
+					<meshBasicMaterial color="#ffffff" />
+				</mesh>
+			)}
+			<mesh position={[0, -0.05, 0.005]} scale={[1, 0.5, 1]}>
+				<circleGeometry args={[0.045, 24, 0, Math.PI]} />
+				<meshBasicMaterial color={TONGUE} />
+			</mesh>
+		</group>
+	);
+};
+
 const Mouth: React.FC<{expr: HexExpression; open: number}> = ({expr, open}) => {
 	const z = 0.142;
 	if (expr === 'deadpan' && open < 0.1) {
@@ -230,12 +276,13 @@ const Mouth: React.FC<{expr: HexExpression; open: number}> = ({expr, open}) => {
 export const IngenitoHex: React.FC<{
 	frame: number;
 	mouth: number;
+	shape?: number;
 	talk: number;
 	expr: HexExpression;
 	leftArm?: HexArm;
 	rightArm?: HexArm;
 	book?: boolean;
-}> = ({frame, mouth, talk, expr, leftArm = 'down', rightArm = 'down', book}) => {
+}> = ({frame, mouth, shape = 0, talk, expr, leftArm = 'down', rightArm = 'down', book}) => {
 	const t = frame / 30;
 	const bob = Math.sin(t * 2.2) * 0.012 + talk * Math.sin(t * 9) * 0.01;
 	const tilt = talk * Math.sin(t * 4.5) * 0.04 + (expr === 'skeptic' ? 0.08 : 0);
@@ -286,7 +333,11 @@ export const IngenitoHex: React.FC<{
 						<Eye x={0.1} open={eyeOpen} closed={expr === 'wink'} look={[0.006, 0]} />
 						<Brow x={-0.1} y={browY} tilt={-browTilt} />
 						<Brow x={0.1} y={browY + (expr === 'skeptic' ? 0.03 : 0)} tilt={browTilt} />
-						<Mouth expr={expr} open={mouth} />
+						{talk > 0.25 ? (
+							<TalkingMouth open={mouth} shape={shape} bias={expr === 'worried' || expr === 'surprised' ? -0.5 : expr === 'happy' || expr === 'wink' ? 0.2 : 0} />
+						) : (
+							<Mouth expr={expr} open={mouth} />
+						)}
 					</group>
 					{[-0.25, 0.25].map((x) => (
 						<mesh key={x} position={[x, -0.1, 0.14]}>

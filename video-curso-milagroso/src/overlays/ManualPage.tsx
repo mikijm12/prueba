@@ -53,9 +53,55 @@ const Dibujo: React.FC<{k: number; frame: number}> = ({k, frame}) => {
 	);
 };
 
+// Recubrimiento del refuerzo (corte de columna) y cangrejera: tapar vs. reparar
+const DibujoRecubrimiento: React.FC<{k: number}> = ({k}) => {
+	const show = (d: number) => ({opacity: Math.min(1, Math.max(0, k * 1.6 - d) * 3)});
+	return (
+		<svg width={820} height={720} viewBox="0 0 820 720">
+			{/* corte de la columna */}
+			<g style={show(0)}>
+				<rect x={60} y={90} width={300} height={300} fill="#e9edf8" stroke={NAVY} strokeWidth={4} />
+				<rect x={100} y={130} width={220} height={220} fill="none" stroke={TEAL} strokeWidth={5} />
+				{[[115, 145], [305, 145], [115, 335], [305, 335], [210, 145], [210, 335]].map(([x, y]) => (
+					<circle key={`${x}${y}`} cx={x} cy={y} r={13} fill={NAVY} />
+				))}
+			</g>
+			<g style={show(0.25)} stroke="#e8344a" strokeWidth={3}>
+				<line x1={60} y1={420} x2={100} y2={420} />
+				<line x1={60} y1={410} x2={60} y2={430} />
+				<line x1={100} y1={410} x2={100} y2={430} />
+			</g>
+			<g fontFamily={FONT} fontWeight={800} style={show(0.3)}>
+				<text x={80} y={460} fontSize={30} fill="#e8344a" textAnchor="middle">r</text>
+				<text x={60} y={60} fontSize={26} fill={NAVY}>CORTE DE COLUMNA</text>
+				<text x={120} y={520} fontSize={24} fill={NAVY}>r = recubrimiento</text>
+				<text x={120} y={552} fontSize={24} fill={NAVY}>(concreto que protege</text>
+				<text x={120} y={584} fontSize={24} fill={NAVY}>al acero)</text>
+			</g>
+			{/* cangrejera: tapar ✗ / reparar ✓ */}
+			<g style={show(0.5)}>
+				<rect x={470} y={90} width={130} height={300} fill="#e9edf8" stroke={NAVY} strokeWidth={4} />
+				{Array.from({length: 14}, (_, i) => (
+					<circle key={i} cx={505 + (i % 4) * 20} cy={200 + Math.floor(i / 4) * 22} r={8} fill="#7d786e" />
+				))}
+				<line x1={510} y1={190} x2={510} y2={290} stroke="#8a4b2a" strokeWidth={5} />
+				<line x1={560} y1={190} x2={560} y2={290} stroke="#8a4b2a" strokeWidth={5} />
+			</g>
+			<g fontFamily={FONT} fontWeight={900} style={show(0.7)}>
+				<text x={470} y={60} fontSize={26} fill={NAVY}>CANGREJERA</text>
+				<text x={620} y={190} fontSize={28} fill="#e8344a">✗ Tarrajear</text>
+				<text x={620} y={222} fontSize={28} fill="#e8344a">encima</text>
+				<text x={620} y={300} fontSize={28} fill="#13a88d">✓ Reparar</text>
+				<text x={620} y={332} fontSize={28} fill="#13a88d">según norma</text>
+			</g>
+		</svg>
+	);
+};
+
 export const ManualPage: React.FC<{frame: number}> = ({frame}) => {
 	const {fps} = useVideoConfig();
 	const ep = useEp();
+	const m = ep.timeline.manual ?? {code: 'E.060', area: 'CONCRETO ARMADO', title: '¿Qué carga una columna?', drawing: 'columna', stamp: ['NO SE', 'RETIRA']};
 	const seg = ep.segmentWithOverlay('manual');
 	if (!seg || frame < seg.overlayFrom! || frame >= seg.to) return null;
 	const local = frame - seg.overlayFrom!;
@@ -70,7 +116,7 @@ export const ManualPage: React.FC<{frame: number}> = ({frame}) => {
 				style={{
 					position: 'absolute',
 					left: 70,
-					top: 330,
+					top: ep.timeline.labels ? 380 : 330,
 					width: 940,
 					borderRadius: 18,
 					overflow: 'hidden',
@@ -84,15 +130,15 @@ export const ManualPage: React.FC<{frame: number}> = ({frame}) => {
 				<div style={{background: NAVY, padding: '22px 34px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
 					<div style={{background: TEAL, color: NAVY, fontWeight: 900, fontSize: 22, letterSpacing: 2, padding: '6px 14px'}}>MANUAL ILUSTRADO DEL RNE</div>
 					<div style={{color: '#fff', fontWeight: 800, fontSize: 30}}>
-						Norma <span style={{color: TEAL}}>E.060</span>
+						Norma <span style={{color: TEAL}}>{m.code}</span>
 					</div>
 				</div>
 				<div style={{padding: '26px 40px 10px'}}>
-					<div style={{fontSize: 24, fontWeight: 700, color: TEAL, letterSpacing: 2}}>CONCRETO ARMADO</div>
-					<div style={{fontSize: 48, fontWeight: 900, color: NAVY, lineHeight: 1.1, marginTop: 6}}>¿Qué carga una columna?</div>
+					<div style={{fontSize: 24, fontWeight: 700, color: TEAL, letterSpacing: 2}}>{m.area}</div>
+					<div style={{fontSize: 48, fontWeight: 900, color: NAVY, lineHeight: 1.1, marginTop: 6}}>{m.title}</div>
 				</div>
 				<div style={{display: 'flex', justifyContent: 'center'}}>
-					<Dibujo k={draw} frame={frame} />
+					{m.drawing === 'recubrimiento' ? <DibujoRecubrimiento k={draw} /> : <Dibujo k={draw} frame={frame} />}
 				</div>
 				<div style={{display: 'flex', gap: 16, padding: '0 40px 34px', flexWrap: 'wrap'}}>
 					{['Cita literal + artículo', 'Ejemplos resueltos', 'Lista de control'].map((t) => (
@@ -118,9 +164,9 @@ export const ManualPage: React.FC<{frame: number}> = ({frame}) => {
 						background: 'rgba(255,255,255,0.85)',
 					}}
 				>
-					NO SE
+					{m.stamp[0]}
 					<br />
-					RETIRA
+					{m.stamp[1]}
 				</div>
 			</div>
 		</AbsoluteFill>

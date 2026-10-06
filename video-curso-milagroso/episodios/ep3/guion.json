@@ -1,0 +1,221 @@
+{
+  "ingenito": "hex",
+  "labels": true,
+  "fps": 30,
+  "gap": 0.1,
+  "voces": {
+    "junior": {
+      "voice": "es-PE-AlexNeural",
+      "rate": "+30%",
+      "pitch": "+6Hz"
+    },
+    "ingenito": {
+      "voice": "es-PE-AlexNeural",
+      "rate": "+24%",
+      "pitch": "-8Hz"
+    },
+    "teo": {
+      "voice": "es-PE-AlexNeural",
+      "rate": "+10%",
+      "pitch": "-26Hz"
+    },
+    "supervisora": {
+      "voice": "es-PE-CamilaNeural",
+      "rate": "+22%",
+      "pitch": "+0Hz"
+    }
+  },
+  "manual": {
+    "code": "E.060",
+    "area": "CONCRETO ARMADO",
+    "title": "Recubrimiento y cangrejeras",
+    "drawing": "recubrimiento",
+    "stamp": [
+      "SE REPARA,",
+      "NO SE TAPA"
+    ]
+  },
+  "beats": [
+    {
+      "type": "line",
+      "who": "junior",
+      "text": "Ya, Ingenito, ya guardé el plano.",
+      "say": "Ya Ingenito, ya guardé el plano.",
+      "set": "oficina",
+      "cam": "OFI_JUN",
+      "lead": 0.3,
+      "hook": "POV: eres practicante y mañana viene la supervisora 😰"
+    },
+    {
+      "type": "still",
+      "dur": 2.0,
+      "set": "oficina",
+      "cam": "OFI_PC",
+      "overlay": "pc",
+      "hook": "POV: eres practicante y mañana viene la supervisora 😰"
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "Colega, tienes más finales que novela turca.",
+      "say": "Colega, tienes más finales que novela turca.",
+      "set": "oficina",
+      "cam": "OFI_ING",
+      "expr": "skeptic",
+      "rightArm": "point",
+      "tail": 0.3
+    },
+    {
+      "type": "still",
+      "dur": 1.1,
+      "set": "oficina",
+      "cam": "OFI_WIDE",
+      "overlay": "title",
+      "titleText": "Al día siguiente…",
+      "sfx": "whoosh"
+    },
+    {
+      "type": "line",
+      "who": "teo",
+      "text": "Tranquilo, inge. Con el tarrajeo no se nota.",
+      "say": "Tranquilo inge, con el tarrajeo no se nota.",
+      "set": "obra-dia",
+      "cam": "OBRA_COL",
+      "teoPose": "point",
+      "lead": 0.1
+    },
+    {
+      "type": "line",
+      "who": "junior",
+      "text": "Ah, ya. Entonces normal, ¿no?",
+      "say": "Ah ya, entonces normal, ¿no?",
+      "set": "obra-dia",
+      "cam": "OBRA_JUN",
+      "juniorSmile": 0.6
+    },
+    {
+      "type": "still",
+      "dur": 1.3,
+      "set": "obra-dia",
+      "cam": "OBRA_DRAMA",
+      "expr": "surprised",
+      "sfx": "drama",
+      "shake": true
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "¡¿Normal?! ¡Eso no se tapa, se repara, maestro!",
+      "say": "¿Normal? ¡Eso no se tapa, se repara, maestro!",
+      "set": "obra-dia",
+      "cam": "OBRA_ING",
+      "expr": "worried",
+      "rightArm": "stop"
+    },
+    {
+      "type": "line",
+      "who": "teo",
+      "text": "Toda la vida lo hemos hecho así, joven.",
+      "say": "Toda la vida lo hemos hecho así, joven.",
+      "set": "obra-dia",
+      "cam": "OBRA_TEO",
+      "teoPose": "crossed"
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "Toda la vida también se han caído cosas, maestro.",
+      "say": "Toda la vida también se han caído cosas, maestro.",
+      "set": "obra-dia",
+      "cam": "OBRA_ING",
+      "expr": "deadpan",
+      "tail": 0.3
+    },
+    {
+      "type": "still",
+      "dur": 1.6,
+      "set": "obra-dia",
+      "cam": "OBRA_SUP",
+      "overlay": "nametag",
+      "nametag": [
+        "ING. SUPERVISORA",
+        "Llegó sin avisar"
+      ],
+      "sfx": "tension",
+      "supWalk": true,
+      "expr": "surprised"
+    },
+    {
+      "type": "line",
+      "who": "supervisora",
+      "text": "Buenos días. ¿Y el cuaderno de obra?",
+      "say": "Buenos días, ¿y el cuaderno de obra?",
+      "set": "obra-dia",
+      "cam": "OBRA_SUP2"
+    },
+    {
+      "type": "line",
+      "who": "teo",
+      "text": "¿El cuaderno? Se lo comió el perro, ingeniera.",
+      "say": "¿El cuaderno? Se lo comió el perro, ingeniera.",
+      "set": "obra-dia",
+      "cam": "OBRA_TEO",
+      "teoPose": "shy"
+    },
+    {
+      "type": "still",
+      "dur": 0.8,
+      "set": "obra-dia",
+      "cam": "OBRA_JUN",
+      "juniorBrow": -1,
+      "caption": "( sálvame, Ingenito )"
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "Tranquila, inge. Aquí está todo: dibujado, acotado y con su artículo.",
+      "say": "Tranquila inge, aquí está todo: dibujado, acotado y con su artículo.",
+      "set": "obra-dia",
+      "cam": "OBRA_ING",
+      "expr": "happy",
+      "book": true,
+      "overlay": "manual",
+      "overlayFrom": 0.3,
+      "tail": 0.9
+    },
+    {
+      "type": "line",
+      "who": "supervisora",
+      "text": "Ya… ¿y esto de dónde lo sacaron?",
+      "say": "Ya, ¿y esto de dónde lo sacaron?",
+      "set": "obra-dia",
+      "cam": "OBRA_GROUP",
+      "supPose": "reading"
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "Del RNE Ilustrado, inge. Para que no lo agarren en curva.",
+      "say": "Del erre ene e Ilustrado, inge, para que no lo agarren en curva.",
+      "set": "obra-dia",
+      "cam": "OBRA_ING",
+      "expr": "wink",
+      "rightArm": "thumbs",
+      "tail": 0.4
+    },
+    {
+      "type": "line",
+      "who": "ingenito",
+      "text": "Las 73 normas del RNE, dibujadas.",
+      "say": "Las setenta y tres normas del erre ene e, dibujadas.",
+      "set": "obra-dia",
+      "cam": "OBRA_WIDE",
+      "expr": "happy",
+      "rightArm": "thumbs",
+      "overlay": "end-rne",
+      "lead": 0.2,
+      "tail": 2.3,
+      "sfx": "end"
+    }
+  ]
+}

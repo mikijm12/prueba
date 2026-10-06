@@ -6,6 +6,7 @@ import {Junior} from './Junior';
 import {Ingenito} from './Ingenito';
 import {IngenitoHex} from './IngenitoHex';
 import {Obra} from './Obra';
+import {SceneSets} from './SceneSets';
 import {Cam, Episode} from '../episode';
 
 export const JUNIOR_POS: [number, number, number] = [-0.55, 0, 0];
@@ -17,7 +18,7 @@ type V3 = [number, number, number];
 type CamDef = {a: V3; b: V3; look: V3};
 
 // Cada cámara: posición inicial, final (empuje lento) y punto al que mira
-const CAMS: Record<Cam, CamDef> = {
+const CAMS: Partial<Record<Cam, CamDef>> = {
 	JUN: {a: [0.25, 1.62, 4.3], b: [0.18, 1.64, 3.8], look: [-0.35, 1.5, 0]},
 	ING: {a: [-0.2, 1.66, 4.2], b: [-0.12, 1.68, 3.75], look: [0.45, 1.55, 0]},
 	JUN_LOW: {a: [0.1, 1.0, 4.4], b: [0.05, 1.05, 3.9], look: [-0.4, 1.45, 0]},
@@ -40,7 +41,7 @@ const CameraRig: React.FC<{frame: number; ep: Episode}> = ({frame, ep}) => {
 	const {camera} = useThree();
 	useLayoutEffect(() => {
 		const id = ep.segmentAt(frame).cam;
-		const cam = (ep.timeline.ingenito === 'hex' && HEX_CAMS[id]) || CAMS[id];
+		const cam = (ep.timeline.ingenito === 'hex' && HEX_CAMS[id]) || CAMS[id] || CAMS.WIDE!;
 		const run = ep.camRunAt(frame);
 		const k = interpolate(frame, [run.from, run.to], [0, 1], {easing: Easing.inOut(Easing.quad)});
 		camera.position.set(...lerp3(cam.a, cam.b, k));
@@ -52,6 +53,7 @@ const CameraRig: React.FC<{frame: number; ep: Episode}> = ({frame, ep}) => {
 
 export const Scene3D: React.FC<{frame: number; ep: Episode}> = ({frame, ep}) => {
 	const seg = ep.segmentAt(frame);
+	if (seg.set === 'oficina' || seg.set === 'obra-dia') return <SceneSets frame={frame} ep={ep} />;
 	const pose = seg.juniorPose ?? 'phone';
 	// mira el celular al inicio del plano y luego levanta la vista
 	const lookUpAt = seg.from + (seg.to - seg.from) * (seg.lookUpAt ?? (seg.cam === 'JUN' ? 0.3 : 0));
@@ -86,6 +88,7 @@ export const Scene3D: React.FC<{frame: number; ep: Episode}> = ({frame, ep}) => 
 					<IngenitoHex
 						frame={frame}
 						mouth={ep.mouthOpen('ingenito', frame)}
+						shape={ep.mouthShape('ingenito', frame)}
 						talk={ep.talkLevel('ingenito', frame)}
 						expr={seg.expr ?? 'happy'}
 						leftArm={seg.leftArm}

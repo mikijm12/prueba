@@ -6,7 +6,7 @@ const W = 1080;
 const H = 1920;
 
 // Desplazamiento del fondo según el plano (paralaje falso)
-const PARALLAX: Record<Cam, {x: number; scale: number}> = {
+const PARALLAX: Partial<Record<Cam, {x: number; scale: number}>> = {
 	JUN: {x: 140, scale: 1.25},
 	WIDE: {x: 0, scale: 1.0},
 	ING: {x: -140, scale: 1.25},
@@ -91,7 +91,7 @@ const Bokeh: React.FC<{frame: number}> = ({frame}) => {
 };
 
 export const NightBackdrop: React.FC<{frame: number; cam: Cam}> = ({frame, cam}) => {
-	const p = PARALLAX[cam];
+	const p = PARALLAX[cam] ?? {x: 0, scale: 1.1};
 	const craneLight = Math.sin(frame / 9) > 0 ? 1 : 0.2;
 	return (
 		<AbsoluteFill style={{background: 'linear-gradient(180deg, #040824 0%, #0a1648 45%, #17287a 75%, #0d1640 100%)', overflow: 'hidden'}}>

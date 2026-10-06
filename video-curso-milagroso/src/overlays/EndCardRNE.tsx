@@ -150,7 +150,7 @@ export const EndCardRNE: React.FC<{frame: number}> = ({frame}) => {
 					<directionalLight color="#fff2e0" intensity={2.6} position={[2, 4, 5]} />
 					<directionalLight color="#4de8d0" intensity={1.2} position={[-3, 2, -3]} />
 					<group position={[0, 0.05, 0]}>
-						<IngenitoHex frame={frame} mouth={ep.mouthOpen('ingenito', frame)} talk={ep.talkLevel('ingenito', frame)} expr="happy" leftArm="down" rightArm="thumbs" />
+						<IngenitoHex frame={frame} mouth={ep.mouthOpen('ingenito', frame)} shape={ep.mouthShape('ingenito', frame)} talk={ep.talkLevel('ingenito', frame)} expr="happy" leftArm="down" rightArm="thumbs" />
 					</group>
 				</ThreeCanvas>
 			</div>

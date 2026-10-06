@@ -3,8 +3,12 @@ import type {HexArm, HexExpression} from './three/IngenitoHex';
 
 // Datos de un episodio, generados por scripts/sonido.py a partir de episodios/<ep>/guion.json
 
-export type Cam = 'JUN' | 'ING' | 'JUN_LOW' | 'ING_CLOSE' | 'WIDE' | 'TWO' | 'WIDE_END';
-export type Overlay = 'mockup' | 'run' | 'insta-crop' | 'insta-reveal' | 'end' | 'chat' | 'manual' | 'end-rne';
+export type Cam =
+	| 'JUN' | 'ING' | 'JUN_LOW' | 'ING_CLOSE' | 'WIDE' | 'TWO' | 'WIDE_END'
+	| 'OFI_JUN' | 'OFI_PC' | 'OFI_ING' | 'OFI_WIDE'
+	| 'OBRA_COL' | 'OBRA_JUN' | 'OBRA_DRAMA' | 'OBRA_ING' | 'OBRA_TEO' | 'OBRA_SUP' | 'OBRA_SUP2' | 'OBRA_GROUP' | 'OBRA_WIDE';
+export type SetId = 'obra-noche' | 'oficina' | 'obra-dia';
+export type Overlay = 'mockup' | 'run' | 'insta-crop' | 'insta-reveal' | 'end' | 'chat' | 'manual' | 'end-rne' | 'pc' | 'title' | 'nametag';
 
 export type Segment = {
 	from: number;
@@ -23,6 +27,15 @@ export type Segment = {
 	leftArm?: HexArm;
 	rightArm?: HexArm;
 	book?: boolean;
+	// episodio 3
+	set?: SetId;
+	teoPose?: 'idle' | 'point' | 'crossed' | 'shy';
+	supPose?: 'idle' | 'reading';
+	supWalk?: boolean;
+	shake?: boolean;
+	hook?: string;
+	titleText?: string;
+	nametag?: string[];
 };
 
 export type Line = {who: string; text: string; from: number; to: number};
@@ -38,10 +51,12 @@ export type Timeline = {
 	lines: Line[];
 	sfx: Record<string, any>;
 	chat?: ChatMsg[];
+	labels?: boolean;
+	manual?: {code: string; area: string; title: string; drawing: 'columna' | 'recubrimiento'; stamp: string[]};
 };
 
-export type Mouth = {junior: number[]; ingenito: number[]};
-export type Who = 'junior' | 'ingenito';
+export type Mouth = Record<string, number[]>;
+export type Who = string;
 
 export const makeEpisode = (timeline: Timeline, mouth: Mouth) => {
 	const segments = timeline.segments;
@@ -62,15 +77,16 @@ export const makeEpisode = (timeline: Timeline, mouth: Mouth) => {
 		segmentWithOverlay: (overlay: Overlay) => segments.find((s) => s.overlay === overlay),
 		segmentsWithOverlay: (overlay: Overlay) => segments.filter((s) => s.overlay === overlay),
 		// Apertura de boca 0..1 por fotograma, calculada del volumen de la voz real
-		mouthOpen: (who: Who, frame: number) => mouth[who][frame] ?? 0,
+		mouthOpen: (who: Who, frame: number) => mouth[who]?.[frame] ?? 0,
+		mouthShape: (who: Who, frame: number) => mouth[who + '_shape']?.[frame] ?? 0,
 		isTalking: (who: Who, frame: number) => {
-			for (let f = frame - 3; f <= frame + 3; f++) if ((mouth[who][f] ?? 0) > 0.1) return true;
+			for (let f = frame - 3; f <= frame + 3; f++) if ((mouth[who]?.[f] ?? 0) > 0.1) return true;
 			return false;
 		},
 		// 0..1 suavizado, para gestos sin saltos
 		talkLevel: (who: Who, frame: number) => {
 			let n = 0;
-			for (let f = frame - 8; f <= frame + 8; f++) if ((mouth[who][f] ?? 0) > 0.1) n++;
+			for (let f = frame - 8; f <= frame + 8; f++) if ((mouth[who]?.[f] ?? 0) > 0.1) n++;
 			return Math.min(1, n / 8);
 		},
 	};

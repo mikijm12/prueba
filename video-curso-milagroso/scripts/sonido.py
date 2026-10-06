@@ -146,11 +146,37 @@ def robotize(x):
 
 
 def mouth_curve(x, fps):
+    """Apertura de boca (0..1) por fotograma según el volumen."""
     hop = SR // fps
     n = int(np.ceil(len(x) / hop))
     rms = np.array([np.sqrt(np.mean(x[i * hop:(i + 1) * hop] ** 2)) if len(x[i * hop:(i + 1) * hop]) else 0 for i in range(n)])
     rms = rms / max(1e-6, np.percentile(rms, 95))
     return np.clip((rms - 0.12) / 0.75, 0, 1)
+
+
+def mouth_shape(x, fps):
+    """Forma de boca (-1 redonda "o/u" … +1 ancha "e/i") por fotograma, según el brillo espectral."""
+    hop = SR // fps
+    n = int(np.ceil(len(x) / hop))
+    win = np.hanning(2048)
+    freqs = np.fft.rfftfreq(2048, 1 / SR)
+    cents = np.zeros(n)
+    for i in range(n):
+        c = i * hop + hop // 2
+        seg = x[max(0, c - 1024):c + 1024]
+        if len(seg) < 2048:
+            seg = np.pad(seg, (0, 2048 - len(seg)))
+        mag = np.abs(np.fft.rfft(seg * win))
+        band = (freqs > 200) & (freqs < 5000)
+        cents[i] = (mag[band] * freqs[band]).sum() / max(1e-9, mag[band].sum())
+    voiced = mouth_curve(x, fps) > 0.1
+    if voiced.sum() < 3:
+        return np.zeros(n)
+    mu, sd = cents[voiced].mean(), cents[voiced].std() + 1e-6
+    shape = np.tanh((cents - mu) / sd)
+    # suavizado ligero para que no tiemble
+    shape = np.convolve(shape, np.ones(3) / 3, mode="same")
+    return np.where(voiced, shape, 0)
 
 
 # ---------- efectos ----------
@@ -222,6 +248,46 @@ def typing(dur):
     while t < dur:
         place(out, click(0.025) * rng.uniform(0.4, 0.8), t)
         t += rng.uniform(0.07, 0.16)
+    return out
+
+
+def saw(f, n):
+    t = np.arange(n) / SR
+    return 2 * ((t * f) % 1) - 1
+
+
+def drama(dur=1.9):
+    """"¡Tan, tan, taaan!" de telenovela: tres golpes de metales graves + timbal."""
+    out = np.zeros(int(dur * SR))
+    notes = [(146.8, 0.0, 0.22), (138.6, 0.28, 0.22), (110.0, 0.56, 1.3)]
+    for f, t0, d in notes:
+        n = int(d * SR)
+        tone = sum(saw(f * m, n) * (0.5 / m) for m in (1, 1.005, 2.0))
+        tone = lowpass(tone, 0.12) * env(n, 0.01, min(0.4, d * 0.6))
+        t = np.arange(n) / SR
+        timp = np.sin(2 * np.pi * np.cumsum(70 + 40 * np.exp(-t * 20)) / SR) * np.exp(-t * 5)
+        place(out, tone * 0.8 + timp * 0.6, t0)
+    return out
+
+
+def hit(dur=1.2):
+    """Golpe grave de tensión con cola de ruido."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    boom = np.sin(2 * np.pi * np.cumsum(45 + 60 * np.exp(-t * 12)) / SR) * np.exp(-t * 3.5)
+    return boom + lowpass(noise(n), 0.05) * np.exp(-t * 4) * 0.6
+
+
+def obra_ambiente(dur):
+    """Ambiente de obra lejano: martillazos irregulares y zumbido de mezcladora."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    out = lowpass(noise(n), 0.02) * 0.25 + np.sin(2 * np.pi * 52 * t) * 0.03 * (1 + 0.3 * np.sin(2 * np.pi * 1.3 * t))
+    k = 0.3
+    while k < dur:
+        place(out, click(0.04) * 0.35, k)
+        place(out, click(0.04) * 0.25, k + 0.18)
+        k += rng.uniform(0.9, 1.8)
     return out
 
 
@@ -329,6 +395,12 @@ def main(ep):
             sfx["reveal"] = seg["overlayFrom"]
         elif ov == "manual":
             sfx["manualIn"] = seg["overlayFrom"]
+        if b.get("sfx") == "whoosh":
+            sfx.setdefault("whoosh", []).append(f0)
+        if b.get("sfx") in ("drama", "tension"):
+            sfx.setdefault(b["sfx"], []).append(f0)
+        if b.get("set") == "obra-dia":
+            sfx.setdefault("obraDia", []).append([f0, f1])
         if b.get("sfx") == "crickets":
             sfx["crickets"] = [f0, f1]
         if b.get("sfx") == "end":
@@ -341,14 +413,20 @@ def main(ep):
 
     # voces + curvas de boca
     voices = np.zeros(n)
-    mouth = {"junior": [0.0] * n_frames, "ingenito": [0.0] * n_frames}
+    speakers = sorted({w for w, _, _ in voice_places} | {"junior", "ingenito"})
+    mouth = {}
+    for w in speakers:
+        mouth[w] = [0.0] * n_frames
+        mouth[w + "_shape"] = [0.0] * n_frames
     for who, clip, start in voice_places:
         place(voices, clip * 0.95, start)
         curve = mouth_curve(clip, fps)
+        shape = mouth_shape(clip, fps)
         f0 = round(start * fps)
-        for i, v in enumerate(curve):
+        for i, (v, sh) in enumerate(zip(curve, shape)):
             if f0 + i < n_frames:
                 mouth[who][f0 + i] = round(float(v), 3)
+                mouth[who + "_shape"][f0 + i] = round(float(sh), 2)
 
     # música con ducking bajo la voz y corte en los grillos
     music = lofi(total + 0.5)[:n]
@@ -358,6 +436,9 @@ def main(ep):
     if "crickets" in sfx:
         a, b = (int(x / fps * SR) for x in sfx["crickets"])
         music[a:b] = 0
+    for f_ in sfx.get("drama", []) + sfx.get("tension", []):
+        a = int(f_ / fps * SR)
+        music[a:a + int(1.6 * SR)] *= np.linspace(0, 1, int(1.6 * SR))[: len(music[a:a + int(1.6 * SR)])] ** 2
 
     fx = np.zeros(n)
     at = lambda f: f / fps  # noqa: E731
@@ -391,6 +472,14 @@ def main(ep):
             place(fx, whoosh(0.3) * 0.25, at(s["from"]) - 0.05)
     if "endIn" in sfx:
         place(fx, sting() * 0.25, at(sfx["endIn"]))
+    for w_ in sfx.get("whoosh", []):
+        place(fx, whoosh(0.5) * 0.35, at(w_))
+    for d_ in sfx.get("drama", []):
+        place(fx, drama() * 0.45, at(d_))
+    for h_ in sfx.get("tension", []):
+        place(fx, hit() * 0.5, at(h_))
+    for a, b in sfx.get("obraDia", []):
+        place(fx, obra_ambiente(at(b - a)) * 0.5, at(a))
 
     mix = voices * 0.9 + music + fx
     mix /= max(1.0, np.abs(mix).max() / 0.89)
@@ -405,6 +494,7 @@ def main(ep):
     timeline = {
         "id": ep, "fps": fps, "durationInFrames": n_frames, "ingenito": g.get("ingenito", "robot"),
         "segments": segments, "lines": lines, "sfx": sfx, "chat": chat,
+        "labels": g.get("labels", False), "manual": g.get("manual"),
     }
     out_dir = os.path.join(ROOT, "src", "episodios", ep)
     os.makedirs(out_dir, exist_ok=True)

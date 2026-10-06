@@ -1,0 +1,327 @@
+{
+ "id": "ep3",
+ "fps": 30,
+ "durationInFrames": 1443,
+ "ingenito": "hex",
+ "segments": [
+  {
+   "set": "oficina",
+   "cam": "OFI_JUN",
+   "hook": "POV: eres practicante y mañana viene la supervisora 😰",
+   "from": 0,
+   "to": 65
+  },
+  {
+   "set": "oficina",
+   "cam": "OFI_PC",
+   "overlay": "pc",
+   "hook": "POV: eres practicante y mañana viene la supervisora 😰",
+   "from": 65,
+   "to": 125,
+   "overlayFrom": 65
+  },
+  {
+   "set": "oficina",
+   "cam": "OFI_ING",
+   "expr": "skeptic",
+   "rightArm": "point",
+   "from": 125,
+   "to": 210
+  },
+  {
+   "set": "oficina",
+   "cam": "OFI_WIDE",
+   "overlay": "title",
+   "titleText": "Al día siguiente…",
+   "from": 210,
+   "to": 243,
+   "overlayFrom": 210
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_COL",
+   "teoPose": "point",
+   "from": 243,
+   "to": 331
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_JUN",
+   "juniorSmile": 0.6,
+   "from": 331,
+   "to": 391
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_DRAMA",
+   "expr": "surprised",
+   "shake": true,
+   "from": 391,
+   "to": 430
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_ING",
+   "expr": "worried",
+   "rightArm": "stop",
+   "from": 430,
+   "to": 544
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TEO",
+   "teoPose": "crossed",
+   "from": 544,
+   "to": 615
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_ING",
+   "expr": "deadpan",
+   "from": 615,
+   "to": 706
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_SUP",
+   "overlay": "nametag",
+   "nametag": [
+    "ING. SUPERVISORA",
+    "Llegó sin avisar"
+   ],
+   "supWalk": true,
+   "expr": "surprised",
+   "from": 706,
+   "to": 754,
+   "overlayFrom": 706
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_SUP2",
+   "from": 754,
+   "to": 809
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TEO",
+   "teoPose": "shy",
+   "from": 809,
+   "to": 920
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_JUN",
+   "juniorBrow": -1,
+   "from": 920,
+   "to": 944
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_ING",
+   "expr": "happy",
+   "book": true,
+   "overlay": "manual",
+   "from": 944,
+   "to": 1098,
+   "overlayFrom": 990
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_GROUP",
+   "supPose": "reading",
+   "from": 1098,
+   "to": 1151
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_ING",
+   "expr": "wink",
+   "rightArm": "thumbs",
+   "from": 1151,
+   "to": 1277
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_WIDE",
+   "expr": "happy",
+   "rightArm": "thumbs",
+   "overlay": "end-rne",
+   "from": 1277,
+   "to": 1443,
+   "overlayFrom": 1277
+  }
+ ],
+ "lines": [
+  {
+   "who": "junior",
+   "text": "Ya, Ingenito, ya guardé el plano.",
+   "from": 9,
+   "to": 65
+  },
+  {
+   "who": "ingenito",
+   "text": "Colega, tienes más finales que novela turca.",
+   "from": 125,
+   "to": 210
+  },
+  {
+   "who": "teo",
+   "text": "Tranquilo, inge. Con el tarrajeo no se nota.",
+   "from": 246,
+   "to": 331
+  },
+  {
+   "who": "junior",
+   "text": "Ah, ya. Entonces normal, ¿no?",
+   "from": 331,
+   "to": 391
+  },
+  {
+   "who": "ingenito",
+   "text": "¡¿Normal?! ¡Eso no se tapa, se repara, maestro!",
+   "from": 430,
+   "to": 544
+  },
+  {
+   "who": "teo",
+   "text": "Toda la vida lo hemos hecho así, joven.",
+   "from": 544,
+   "to": 615
+  },
+  {
+   "who": "ingenito",
+   "text": "Toda la vida también se han caído cosas, maestro.",
+   "from": 615,
+   "to": 706
+  },
+  {
+   "who": "supervisora",
+   "text": "Buenos días. ¿Y el cuaderno de obra?",
+   "from": 754,
+   "to": 809
+  },
+  {
+   "who": "teo",
+   "text": "¿El cuaderno? Se lo comió el perro, ingeniera.",
+   "from": 809,
+   "to": 920
+  },
+  {
+   "who": "caption",
+   "text": "( sálvame, Ingenito )",
+   "from": 920,
+   "to": 944
+  },
+  {
+   "who": "ingenito",
+   "text": "Tranquila, inge. Aquí está todo: dibujado, acotado y con su artículo.",
+   "from": 944,
+   "to": 1098
+  },
+  {
+   "who": "supervisora",
+   "text": "Ya… ¿y esto de dónde lo sacaron?",
+   "from": 1098,
+   "to": 1151
+  },
+  {
+   "who": "ingenito",
+   "text": "Del RNE Ilustrado, inge. Para que no lo agarren en curva.",
+   "from": 1151,
+   "to": 1277
+  },
+  {
+   "who": "ingenito",
+   "text": "Las 73 normas del RNE, dibujadas.",
+   "from": 1283,
+   "to": 1443
+  }
+ ],
+ "sfx": {
+  "comments": [],
+  "pings": [],
+  "typing": [],
+  "sent": [],
+  "whoosh": [
+   210
+  ],
+  "obraDia": [
+   [
+    243,
+    331
+   ],
+   [
+    331,
+    391
+   ],
+   [
+    391,
+    430
+   ],
+   [
+    430,
+    544
+   ],
+   [
+    544,
+    615
+   ],
+   [
+    615,
+    706
+   ],
+   [
+    706,
+    754
+   ],
+   [
+    754,
+    809
+   ],
+   [
+    809,
+    920
+   ],
+   [
+    920,
+    944
+   ],
+   [
+    944,
+    1098
+   ],
+   [
+    1098,
+    1151
+   ],
+   [
+    1151,
+    1277
+   ],
+   [
+    1277,
+    1443
+   ]
+  ],
+  "drama": [
+   391
+  ],
+  "tension": [
+   706
+  ],
+  "manualIn": 990,
+  "endIn": 1277
+ },
+ "chat": [],
+ "labels": true,
+ "manual": {
+  "code": "E.060",
+  "area": "CONCRETO ARMADO",
+  "title": "Recubrimiento y cangrejeras",
+  "drawing": "recubrimiento",
+  "stamp": [
+   "SE REPARA,",
+   "NO SE TAPA"
+  ]
+ }
+}
