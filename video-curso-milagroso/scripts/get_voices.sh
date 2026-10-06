@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Descarga la voz en español de Piper (GitHub releases) y crea un entorno con piper-tts
+# Descarga el modelo de voz Kokoro (GitHub releases) y crea un entorno con kokoro-onnx
 set -euo pipefail
 cd "$(dirname "$0")/.."
-mkdir -p voices
-if [ ! -f voices/es-carlfm-x-low/es-carlfm-x-low.onnx ]; then
-  curl -sSL https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-es-carlfm-x-low.tar.gz | tar xz -C voices --one-top-level=es-carlfm-x-low
-fi
-if [ ! -x .venv/bin/piper ]; then
+mkdir -p voices/kokoro
+for f in kokoro-v1.0.onnx voices-v1.0.bin; do
+  [ -f "voices/kokoro/$f" ] || curl -sSL -o "voices/kokoro/$f" "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/$f"
+done
+if [ ! -x .venv/bin/python ]; then
   python3 -m venv .venv
-  .venv/bin/pip install -q piper-tts numpy
 fi
+.venv/bin/pip install -q kokoro-onnx numpy

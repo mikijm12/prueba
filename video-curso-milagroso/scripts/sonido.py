@@ -1,7 +1,7 @@
 """Construye la línea de tiempo y la banda sonora a partir de scripts/guion.json.
 
-1. Sintetiza cada diálogo con Piper (voz en español, sin servicios de pago).
-2. Procesa la voz: el junior un poco más agudo, Ingenito con efecto robot.
+1. Sintetiza cada diálogo con Kokoro (voces neuronales en español, locales y gratis).
+2. Procesa la voz: el junior un poco más agudo, Ingenito con un toque metálico suave.
 3. Coloca cada beat en el tiempo y escribe src/timeline.json (planos, subtítulos,
    efectos) y src/mouth.json (apertura de boca por fotograma, sacada del audio real).
 4. Mezcla voces + música lo-fi (con ducking) + efectos en public/audio.wav,
@@ -19,8 +19,6 @@ import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SR = 44100
-VOICE = os.path.join(ROOT, "voices/es-carlfm-x-low/es-carlfm-x-low.onnx")
-PIPER = os.path.join(ROOT, ".venv/bin/piper")
 rng = np.random.default_rng(7)
 
 
@@ -71,14 +69,27 @@ def trim_silence(x, thr=0.01):
 
 # ---------- voces ----------
 
+_kokoro = None
+
+
 def synth(text, who, tmp):
+    """Voz neuronal Kokoro: junior = em_alex (rápido, nervioso), Ingenito = em_santa + robot suave."""
+    global _kokoro
+    if _kokoro is None:
+        from kokoro_onnx import Kokoro
+
+        _kokoro = Kokoro(os.path.join(ROOT, "voices/kokoro/kokoro-v1.0.onnx"), os.path.join(ROOT, "voices/kokoro/voices-v1.0.bin"))
+    voice, speed, k = ("em_alex", 1.1, 1.04) if who == "junior" else ("em_santa", 1.0, 0.95)
+    samples, sr = _kokoro.create(text, voice=voice, speed=speed, lang="es")
     raw = os.path.join(tmp, "raw.wav")
     out = os.path.join(tmp, "proc.wav")
-    length = "0.9" if who == "junior" else "1.0"
-    subprocess.run([PIPER, "-m", VOICE, "-f", raw, "--length-scale", length], input=text.encode(), check=True, capture_output=True)
-    # junior: +7 % de tono sin cambiar duración; Ingenito: -6 % (más grave)
-    k = 1.07 if who == "junior" else 0.94
-    _, sr = read_wav(raw)
+    pcm = (np.clip(samples, -1, 1) * 32767).astype(np.int16)
+    with wave.open(raw, "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(sr)
+        w.writeframes(pcm.tobytes())
+    # ajuste leve de tono sin cambiar la duración
     subprocess.run(
         ["ffmpeg", "-v", "error", "-y", "-i", raw, "-af", f"asetrate={sr * k:.0f},aresample={SR},atempo={1 / k:.4f}", "-ac", "1", out],
         check=True,
@@ -91,13 +102,12 @@ def synth(text, who, tmp):
 
 
 def robotize(x):
-    t = np.arange(len(x)) / SR
-    y = x * (0.62 + 0.38 * np.sin(2 * np.pi * 48 * t))  # modulación metálica
-    d = int(0.0045 * SR)
-    for _ in range(2):  # resonancia tipo lata
-        y[d:] += 0.38 * y[:-d]
-    y = np.round(y / np.abs(y).max() * 48) / 48  # bit-crush leve
-    return y
+    """Toque metálico sutil: una resonancia corta mezclada al 30 %, sin distorsión."""
+    d = int(0.006 * SR)
+    wet = x.copy()
+    wet[d:] += 0.5 * x[:-d]
+    wet[2 * d:] += 0.25 * x[:-2 * d]
+    return 0.7 * x + 0.3 * wet / max(1e-6, np.abs(wet).max()) * np.abs(x).max()
 
 
 def mouth_curve(x, fps):
@@ -172,7 +182,7 @@ def lofi(total):
         m = int(bar * SR)
         tt = np.arange(m) / SR
         s = sum(np.sin(2 * np.pi * f * tt) + 0.3 * np.sin(2 * np.pi * f * 2.003 * tt) for f in ch) / len(ch)
-        place(out, s * env(m, 0.3, 0.4) * 0.16, i * bar)
+        place(out, s * env(m, 0.3, 0.4) * 0.11, i * bar)
         i += 1
     k = 0
     while k * beat < total:
@@ -180,7 +190,7 @@ def lofi(total):
             m = int(0.25 * SR)
             tt = np.arange(m) / SR
             kick = np.sin(2 * np.pi * np.cumsum(55 + 90 * np.exp(-tt * 30)) / SR) * np.exp(-tt * 14)
-            place(out, kick * 0.5, k * beat)
+            place(out, kick * 0.35, k * beat)
         m = int(0.05 * SR)
         hat = np.diff(noise(m + 1)) * np.exp(-np.arange(m) / SR * 80)
         place(out, hat * 0.05, k * beat + beat / 2)
@@ -262,7 +272,7 @@ def main():
     music = lofi(total + 0.5)[:n]
     voice_env = lowpass(np.abs(voices), 0.0008)
     voice_env /= max(1e-6, voice_env.max())
-    music *= 1 - 0.6 * np.clip(voice_env * 3, 0, 1)
+    music *= 1 - 0.7 * np.clip(voice_env * 3, 0, 1)
     if "crickets" in sfx:
         a, b = (int(x / fps * SR) for x in sfx["crickets"])
         music[a:b] = 0
