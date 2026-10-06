@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Descarga el modelo de voz Kokoro (GitHub releases) y crea un entorno con kokoro-onnx
+# Crea el entorno de voces: edge-tts (voces peruanas) y Kokoro como respaldo local sin red
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p voices/kokoro
@@ -9,4 +9,4 @@ done
 if [ ! -x .venv/bin/python ]; then
   python3 -m venv .venv
 fi
-.venv/bin/pip install -q kokoro-onnx numpy
+.venv/bin/pip install -q edge-tts kokoro-onnx numpy

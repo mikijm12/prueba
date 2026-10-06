@@ -1,7 +1,8 @@
 """Construye la línea de tiempo y la banda sonora a partir de scripts/guion.json.
 
-1. Sintetiza cada diálogo con Kokoro (voces neuronales en español, locales y gratis).
-2. Procesa la voz: el junior un poco más agudo, Ingenito con un toque metálico suave.
+1. Sintetiza cada diálogo con las voces peruanas de Microsoft (edge-tts, es-PE-AlexNeural);
+   con VOCES=kokoro usa en cambio voces neuronales locales (sin red).
+2. Procesa la voz: el junior un poco más agudo, Ingenito más grave con un toque metálico suave.
 3. Coloca cada beat en el tiempo y escribe src/timeline.json (planos, subtítulos,
    efectos) y src/mouth.json (apertura de boca por fotograma, sacada del audio real).
 4. Mezcla voces + música lo-fi (con ducking) + efectos en public/audio.wav,
@@ -69,21 +70,44 @@ def trim_silence(x, thr=0.01):
 
 # ---------- voces ----------
 
+# Voces peruanas de Microsoft (las mismas de la skill de videos CIngeniería).
+# Ingenito usa la misma voz masculina, más grave y con toque robot, para diferenciarlo.
+EDGE_VOICES = {
+    "junior": {"voice": "es-PE-AlexNeural", "rate": "+18%", "pitch": "+6Hz"},
+    "ingenito": {"voice": "es-PE-AlexNeural", "rate": "+8%", "pitch": "-14Hz"},
+}
+# Respaldo local si no hay red: VOCES=kokoro
+KOKORO_VOICES = {"junior": ("em_alex", 1.1, 1.04), "ingenito": ("em_santa", 1.0, 0.95)}
 _kokoro = None
 
 
-def synth(text, who, tmp):
-    """Voz neuronal Kokoro: junior = em_alex (rápido, nervioso), Ingenito = em_santa + robot suave."""
+def synth_edge(text, who, path):
+    import asyncio
+    import ssl
+
+    import edge_tts
+    import edge_tts.communicate as comm
+
+    # el entorno en la nube sale por un proxy con su propio certificado
+    ca = os.environ.get("SSL_CERT_FILE") or "/root/.ccr/ca-bundle.crt"
+    if os.path.exists(ca):
+        comm._SSL_CTX = ssl.create_default_context(cafile=ca)
+    cfg = EDGE_VOICES[who]
+    proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
+    com = edge_tts.Communicate(text, cfg["voice"], rate=cfg["rate"], pitch=cfg["pitch"], proxy=proxy)
+    asyncio.run(com.save(path))
+
+
+def synth_kokoro(text, who, path):
     global _kokoro
     if _kokoro is None:
         from kokoro_onnx import Kokoro
 
         _kokoro = Kokoro(os.path.join(ROOT, "voices/kokoro/kokoro-v1.0.onnx"), os.path.join(ROOT, "voices/kokoro/voices-v1.0.bin"))
-    voice, speed, k = ("em_alex", 1.1, 1.04) if who == "junior" else ("em_santa", 1.0, 0.95)
+    voice, speed, k = KOKORO_VOICES[who]
     samples, sr = _kokoro.create(text, voice=voice, speed=speed, lang="es")
-    raw = os.path.join(tmp, "raw.wav")
-    out = os.path.join(tmp, "proc.wav")
     pcm = (np.clip(samples, -1, 1) * 32767).astype(np.int16)
+    raw = path + ".raw.wav"
     with wave.open(raw, "wb") as w:
         w.setnchannels(1)
         w.setsampwidth(2)
@@ -91,9 +115,19 @@ def synth(text, who, tmp):
         w.writeframes(pcm.tobytes())
     # ajuste leve de tono sin cambiar la duración
     subprocess.run(
-        ["ffmpeg", "-v", "error", "-y", "-i", raw, "-af", f"asetrate={sr * k:.0f},aresample={SR},atempo={1 / k:.4f}", "-ac", "1", out],
+        ["ffmpeg", "-v", "error", "-y", "-i", raw, "-af", f"asetrate={sr * k:.0f},aresample={sr},atempo={1 / k:.4f}", path],
         check=True,
     )
+
+
+def synth(text, who, tmp):
+    raw = os.path.join(tmp, "voz.mp3" if os.environ.get("VOCES", "edge") == "edge" else "voz.wav")
+    if os.environ.get("VOCES", "edge") == "edge":
+        synth_edge(text, who, raw)
+    else:
+        synth_kokoro(text, who, raw)
+    out = os.path.join(tmp, "proc.wav")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-ar", str(SR), "-ac", "1", out], check=True)
     x, _ = read_wav(out)
     x = trim_silence(x)
     if who == "ingenito":

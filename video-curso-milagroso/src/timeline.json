@@ -1,26 +1,26 @@
 {
  "fps": 30,
- "durationInFrames": 965,
+ "durationInFrames": 1049,
  "segments": [
   {
    "cam": "JUN",
    "juniorPose": "phone",
    "lookUpAt": 0.6,
    "from": 0,
-   "to": 57
+   "to": 61
   },
   {
    "cam": "WIDE",
    "overlay": "mockup",
-   "from": 57,
-   "to": 165,
-   "overlayFrom": 57
+   "from": 61,
+   "to": 169,
+   "overlayFrom": 61
   },
   {
    "cam": "ING",
    "ingenitoEyes": "skeptic",
-   "from": 165,
-   "to": 207
+   "from": 169,
+   "to": 203
   },
   {
    "cam": "JUN_LOW",
@@ -28,73 +28,73 @@
    "juniorSmile": 1,
    "juniorBrow": 1,
    "overlay": "run",
-   "from": 207,
-   "to": 256,
-   "overlayFrom": 207
+   "from": 203,
+   "to": 251,
+   "overlayFrom": 203
   },
   {
    "cam": "ING_CLOSE",
    "ingenitoEyes": "deadpan",
-   "from": 256,
-   "to": 283
+   "from": 251,
+   "to": 278
   },
   {
    "cam": "ING",
-   "from": 283,
-   "to": 375
+   "from": 278,
+   "to": 426
   },
   {
    "cam": "JUN",
    "juniorPose": "phone",
    "juniorBrow": 1,
-   "from": 375,
-   "to": 488
+   "from": 426,
+   "to": 538
   },
   {
    "cam": "ING_CLOSE",
    "ingenitoEyes": "deadpan",
-   "from": 488,
-   "to": 596
+   "from": 538,
+   "to": 647
   },
   {
    "cam": "TWO",
    "juniorPose": "phone",
    "juniorBrow": -1,
-   "from": 596,
-   "to": 633
+   "from": 647,
+   "to": 710
   },
   {
    "cam": "TWO",
    "juniorPose": "phone",
    "juniorBrow": -1,
    "ingenitoEyes": "happy",
-   "from": 633,
-   "to": 664
+   "from": 710,
+   "to": 738
   },
   {
    "cam": "JUN_LOW",
    "juniorPose": "proud",
    "juniorSmile": 0.5,
    "overlay": "insta-crop",
-   "from": 664,
-   "to": 767,
-   "overlayFrom": 700
+   "from": 738,
+   "to": 824,
+   "overlayFrom": 768
   },
   {
    "cam": "ING_CLOSE",
    "ingenitoEyes": "deadpan",
    "overlay": "insta-reveal",
-   "from": 767,
-   "to": 869,
-   "overlayFrom": 810
+   "from": 824,
+   "to": 952,
+   "overlayFrom": 878
   },
   {
    "cam": "WIDE_END",
    "ingenitoEyes": "happy",
    "overlay": "end",
-   "from": 869,
-   "to": 965,
-   "overlayFrom": 869
+   "from": 952,
+   "to": 1048,
+   "overlayFrom": 952
   }
  ],
  "lines": [
@@ -102,85 +102,85 @@
    "who": "junior",
    "text": "Ingenito, ¿compro este curso?",
    "from": 0,
-   "to": 57
+   "to": 61
   },
   {
    "who": "ingenito",
    "text": "¿Y qué te enseña?",
-   "from": 165,
-   "to": 207
+   "from": 169,
+   "to": 203
   },
   {
    "who": "junior",
    "text": "A apretar «Run».",
-   "from": 207,
-   "to": 256
+   "from": 203,
+   "to": 251
   },
   {
    "who": "caption",
    "text": "( grillos )",
-   "from": 256,
-   "to": 283
+   "from": 251,
+   "to": 278
   },
   {
    "who": "ingenito",
    "text": "Eso te lo enseño yo. Gratis. Es el botón verde.",
-   "from": 283,
-   "to": 375
+   "from": 278,
+   "to": 426
   },
   {
    "who": "junior",
    "text": "Pero dice que en 3 días diseño un edificio de 20 pisos.",
-   "from": 375,
-   "to": 488
+   "from": 426,
+   "to": 538
   },
   {
    "who": "ingenito",
    "text": "En 3 días la municipalidad ni te contesta el correo.",
-   "from": 488,
-   "to": 596
+   "from": 538,
+   "to": 647
   },
   {
    "who": "junior",
    "text": "…Ok. No lo compro.",
-   "from": 596,
-   "to": 633
+   "from": 647,
+   "to": 710
   },
   {
    "who": "ingenito",
    "text": "Bien.",
-   "from": 633,
-   "to": 664
+   "from": 710,
+   "to": 738
   },
   {
    "who": "junior",
    "text": "Pero el profe sale posando frente a su edificio…",
-   "from": 664,
-   "to": 767
+   "from": 738,
+   "to": 824
   },
   {
    "who": "ingenito",
    "text": "Es un centro comercial. Fue a comprar.",
-   "from": 767,
-   "to": 869
+   "from": 824,
+   "to": 952
   }
  ],
  "sfx": {
   "comments": [
-   105,
-   123,
-   141
+   109,
+   127,
+   145
   ],
-  "mockupIn": 57,
-  "priceSlash": 87,
-  "runPop": 226,
-  "runClick": 238,
+  "mockupIn": 61,
+  "priceSlash": 91,
+  "runPop": 220,
+  "runClick": 232,
   "crickets": [
-   256,
-   283
+   251,
+   278
   ],
-  "instaIn": 700,
-  "reveal": 810,
-  "endIn": 869
+  "instaIn": 768,
+  "reveal": 878,
+  "endIn": 952
  }
 }
