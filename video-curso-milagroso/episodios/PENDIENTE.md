@@ -9,9 +9,11 @@
 - Voces actuales: edge-tts (es-PE-AlexNeural / es-PE-CamilaNeural). El usuario las encuentra planas y "serias".
 
 ## Siguiente: voces con ElevenLabs
-El usuario agregó en el entorno la variable `ELEVENLABS_API_KEY` y el dominio `api.elevenlabs.io`.
-1. Comprobar acceso: `curl -sS -H "xi-api-key: $ELEVENLABS_API_KEY" https://api.elevenlabs.io/v1/voices | head`.
-2. Agregar en `scripts/sonido.py` un motor `VOCES=eleven` (además de edge y kokoro) que use el modelo más expresivo
+El usuario guardó su clave como **secreto de red** del entorno para `api.elevenlabs.io` (encabezado `xi-api-key`):
+el proxy la inyecta solo; la sesión no ve la clave ni hay variable de entorno. Dominio permitido: `api.elevenlabs.io`.
+1. Comprobar acceso sin clave en el código: `curl -sS https://api.elevenlabs.io/v1/user/subscription | head -c 400`
+   (y `.../v1/voices`). Si da 401, revisar con el usuario el nombre del encabezado del secreto.
+2. Agregar en `scripts/sonido.py` un motor `VOCES=eleven` (sin poner la clave en el código; el proxy la agrega) (además de edge y kokoro) que use el modelo más expresivo
    disponible en la cuenta (v3 si existe, con etiquetas de actuación como [laughs], [sarcastic], [shouting]),
    con voz por personaje configurable en `guion.json` → "voces".
 3. Enviar al usuario muestras de 3-4 voces latinas por personaje (Ingenito, practicante, Don Teo, supervisora) para que elija.
