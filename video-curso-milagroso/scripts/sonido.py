@@ -604,6 +604,7 @@ def main(ep):
         music[a:a + int(1.6 * SR)] *= np.linspace(0, 1, int(1.6 * SR))[: len(music[a:a + int(1.6 * SR)])] ** 2
 
     fx = np.zeros(n)
+    amb = np.zeros(n)  # lluvia, chorro, ambiente de obra: bajan cuando alguien habla
     at = lambda f: f / fps  # noqa: E731
     if "mockupIn" in sfx:
         place(fx, whoosh() * 0.35, at(sfx["mockupIn"]) - 0.1)
@@ -636,7 +637,7 @@ def main(ep):
     if "endIn" in sfx:
         place(fx, sting() * 0.25, at(sfx["endIn"]))
     if g.get("clima") == "lluvia":
-        place(fx, lluvia(total) * 0.22, 0)
+        place(amb, lluvia(total) * 0.14, 0)
     for f_ in sfx.get("trueno", []):
         place(fx, trueno() * 0.5, at(f_))
     for f_ in sfx.get("gota", []):
@@ -649,7 +650,7 @@ def main(ep):
     for f_ in sfx.get("silbido", []):
         place(fx, silbido() * 0.25, at(f_) + 0.2)
     for a, b in sfx.get("chorro", []):
-        place(fx, chorro(at(b - a)) * 0.3, at(a) + 0.3)
+        place(amb, chorro(at(b - a)) * 0.07, at(a) + 0.3)
     for w_ in sfx.get("whoosh", []):
         place(fx, whoosh(0.5) * 0.35, at(w_))
     for d_ in sfx.get("drama", []):
@@ -657,9 +658,10 @@ def main(ep):
     for h_ in sfx.get("tension", []):
         place(fx, hit() * 0.5, at(h_))
     for a, b in sfx.get("obraDia", []):
-        place(fx, obra_ambiente(at(b - a)) * 0.5, at(a))
+        place(amb, obra_ambiente(at(b - a)) * 0.5, at(a))
 
-    mix = voices * 0.9 + music + fx
+    amb *= 1 - 0.75 * np.clip(voice_env * 3, 0, 1)
+    mix = voices * 0.9 + music + fx + amb
     mix /= max(1.0, np.abs(mix).max() / 0.89)
     pcm = (mix * 32767).astype(np.int16)
     os.makedirs(os.path.join(ROOT, "public", ep), exist_ok=True)
