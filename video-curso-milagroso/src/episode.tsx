@@ -6,7 +6,7 @@ import type {HexArm, HexExpression} from './three/IngenitoHex';
 export type Cam =
 	| 'JUN' | 'ING' | 'JUN_LOW' | 'ING_CLOSE' | 'WIDE' | 'TWO' | 'WIDE_END'
 	| 'OFI_JUN' | 'OFI_PC' | 'OFI_ING' | 'OFI_WIDE'
-	| 'OBRA_COL' | 'OBRA_JUN' | 'OBRA_DRAMA' | 'OBRA_ING' | 'OBRA_TEO' | 'OBRA_SUP' | 'OBRA_SUP2' | 'OBRA_GROUP' | 'OBRA_WIDE';
+	| 'OBRA_COL' | 'OBRA_JUN' | 'OBRA_DRAMA' | 'OBRA_ING' | 'OBRA_TEO' | 'OBRA_SUP' | 'OBRA_SUP2' | 'OBRA_GROUP' | 'OBRA_WIDE' | 'OBRA_TRIO';
 export type SetId = 'obra-noche' | 'oficina' | 'obra-dia';
 export type Overlay = 'mockup' | 'run' | 'insta-crop' | 'insta-reveal' | 'end' | 'chat' | 'manual' | 'end-rne' | 'pc' | 'title' | 'nametag';
 
@@ -29,7 +29,9 @@ export type Segment = {
 	book?: boolean;
 	// episodio 3
 	set?: SetId;
-	teoPose?: 'idle' | 'point' | 'crossed' | 'shy';
+	teoPose?: 'idle' | 'point' | 'crossed' | 'shy' | 'hose' | 'hide';
+	teoProp?: 'gaseosa';
+	dropOnHat?: boolean;
 	supPose?: 'idle' | 'reading';
 	supWalk?: boolean;
 	shake?: boolean;
@@ -52,7 +54,9 @@ export type Timeline = {
 	sfx: Record<string, any>;
 	chat?: ChatMsg[];
 	labels?: boolean;
-	manual?: {code: string; area: string; title: string; drawing: 'columna' | 'recubrimiento'; stamp: string[]};
+	manual?: {code: string; area: string; title: string; drawing: 'columna' | 'recubrimiento' | 'agua'; stamp: string[]};
+	clima?: 'lluvia';
+	props?: string[];
 };
 
 export type Mouth = Record<string, number[]>;

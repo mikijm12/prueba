@@ -98,6 +98,43 @@ const DibujoRecubrimiento: React.FC<{k: number}> = ({k}) => {
 	);
 };
 
+// Agua de más = poros = menos resistencia; con lluvia, la losa se protege
+const DibujoAgua: React.FC<{k: number}> = ({k}) => {
+	const show = (d: number) => ({opacity: Math.min(1, Math.max(0, k * 1.6 - d) * 3)});
+	const probeta = (x: number, poros: number, color: string) => (
+		<g>
+			<rect x={x} y={110} width={150} height={240} rx={12} fill="#e9edf8" stroke={NAVY} strokeWidth={4} />
+			{Array.from({length: poros}, (_, i) => (
+				<circle key={i} cx={x + 20 + ((i * 37) % 110)} cy={130 + ((i * 53) % 200)} r={6 + (i % 3) * 3} fill={color} />
+			))}
+		</g>
+	);
+	return (
+		<svg width={820} height={720} viewBox="0 0 820 720">
+			<g style={show(0)}>{probeta(80, 3, '#9aa3c7')}</g>
+			<g style={show(0.25)}>{probeta(320, 16, '#7fa6c9')}</g>
+			<g fontFamily={FONT} fontWeight={800} style={show(0.35)}>
+				<text x={155} y={385} fontSize={26} fill="#13a88d" textAnchor="middle">Agua justa</text>
+				<text x={155} y={418} fontSize={24} fill={NAVY} textAnchor="middle">denso y resistente</text>
+				<text x={395} y={385} fontSize={26} fill="#e8344a" textAnchor="middle">Agua de más</text>
+				<text x={395} y={418} fontSize={24} fill={NAVY} textAnchor="middle">poroso y débil</text>
+				<text x={80} y={80} fontSize={26} fill={NAVY}>RELACIÓN AGUA / CEMENTO</text>
+			</g>
+			{/* losa protegida de la lluvia */}
+			<g style={show(0.6)}>
+				<text x={560} y={80} fontFamily={FONT} fontWeight={800} fontSize={26} fill={NAVY}>CON LLUVIA</text>
+				{[0, 1, 2, 3, 4].map((i) => (
+					<line key={i} x1={580 + i * 40} y1={120} x2={565 + i * 40} y2={170} stroke="#7fa6c9" strokeWidth={4} />
+				))}
+				<path d="M560 200 Q660 175 770 200 L770 215 L560 215 Z" fill="#cfe6ff" stroke={NAVY} strokeWidth={3} />
+				<rect x={560} y={215} width={210} height={40} fill="#a9a8a2" stroke={NAVY} strokeWidth={3} />
+				<text x={665} y={300} fontFamily={FONT} fontWeight={800} fontSize={24} fill="#13a88d" textAnchor="middle">✓ Proteger la losa</text>
+				<text x={665} y={332} fontFamily={FONT} fontWeight={800} fontSize={24} fill="#e8344a" textAnchor="middle">✗ Agua a la mezcla</text>
+			</g>
+		</svg>
+	);
+};
+
 export const ManualPage: React.FC<{frame: number}> = ({frame}) => {
 	const {fps} = useVideoConfig();
 	const ep = useEp();
@@ -138,7 +175,7 @@ export const ManualPage: React.FC<{frame: number}> = ({frame}) => {
 					<div style={{fontSize: 48, fontWeight: 900, color: NAVY, lineHeight: 1.1, marginTop: 6}}>{m.title}</div>
 				</div>
 				<div style={{display: 'flex', justifyContent: 'center'}}>
-					{m.drawing === 'recubrimiento' ? <DibujoRecubrimiento k={draw} /> : <Dibujo k={draw} frame={frame} />}
+					{m.drawing === 'recubrimiento' ? <DibujoRecubrimiento k={draw} /> : m.drawing === 'agua' ? <DibujoAgua k={draw} /> : <Dibujo k={draw} frame={frame} />}
 				</div>
 				<div style={{display: 'flex', gap: 16, padding: '0 40px 34px', flexWrap: 'wrap'}}>
 					{['Cita literal + artículo', 'Ejemplos resueltos', 'Lista de control'].map((t) => (

@@ -19,3 +19,12 @@ el proxy la inyecta solo; la sesión no ve la clave ni hay variable de entorno. 
 3. Enviar al usuario muestras de 3-4 voces latinas por personaje (Ingenito, practicante, Don Teo, supervisora) para que elija.
 4. Regenerar el audio del ep3 con las voces elegidas y comparar.
 5. Producir los guiones #1, #7 y #5 del banco respetando REGLAS.md (planos generales con todos en cuadro; zoom solo en remates).
+
+## Actualización (voces elegidas)
+ElevenLabs ya funciona en la sesión original (secreto de red). Casting aprobado por el usuario (modelo eleven_v3, +12 % de velocidad):
+- Ingenito: Thorthugo `WOY6pnQ1WCg0mrOZ54lM`
+- Practicante: El Nero `ljWLDJb7OMkYo3VM9z8g`
+- Don Teo: Juan Carlos `YExhVa4bZONzeingloMX`
+- Supervisora: Emma `tbfu7H6JPPlpF9clW89V`
+Las frases generadas se guardan en `voices/cache/` para no volver a gastar créditos.
+Ep4 = guion #1 "Mojadito se seca mejor" (`episodios/ep4/guion.json`, composición MojaditoSeSecaMejor).

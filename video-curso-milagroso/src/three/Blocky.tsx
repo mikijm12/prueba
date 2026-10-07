@@ -38,7 +38,7 @@ export const LOOKS: Record<string, Look> = {
 	},
 };
 
-export type BlockyPose = 'idle' | 'phone' | 'proud' | 'point' | 'crossed' | 'shy' | 'reading' | 'typing' | 'walk';
+export type BlockyPose = 'idle' | 'phone' | 'proud' | 'point' | 'crossed' | 'shy' | 'reading' | 'typing' | 'walk' | 'hose' | 'hide';
 
 const usePriceTag = () =>
 	useMemo(() => {
@@ -71,6 +71,8 @@ const ARMS: Record<BlockyPose, {r: Rot; l: Rot}> = {
 	reading: {r: [0.05, 0, 0.08], l: [-1.2, 0, 0.45]},
 	typing: {r: [-1.25, 0, -0.15], l: [-1.25, 0, 0.15]},
 	walk: {r: [0, 0, 0.08], l: [0, 0, -0.08]},
+	hose: {r: [-0.95, 0, -0.25], l: [-0.75, 0, 0.35]},
+	hide: {r: [0.6, 0, 0.18], l: [0.6, 0, -0.18]},
 };
 
 export const Blocky: React.FC<{
@@ -85,7 +87,8 @@ export const Blocky: React.FC<{
 	smile?: number;
 	seated?: boolean;
 	headTurn?: number;
-}> = ({look, frame, pose = 'idle', mouth = 0, shape = 0, talking = false, lookUp = 1, browRaise = 0, smile = 0, seated = false, headTurn = 0}) => {
+	prop?: 'gaseosa';
+}> = ({look, frame, pose = 'idle', mouth = 0, shape = 0, talking = false, lookUp = 1, browRaise = 0, smile = 0, seated = false, headTurn = 0, prop}) => {
 	const tagTex = usePriceTag();
 	const t = frame / 30;
 	const breathe = Math.sin(t * 2.2) * 0.008;
@@ -163,6 +166,22 @@ export const Blocky: React.FC<{
 			<group position={[-0.41, 1.37, 0]} rotation={lArm}>
 				{sleeve(look.shirt)}
 				{hand}
+				{prop === 'gaseosa' && (
+					<group position={[0, -0.72, 0.08]} rotation={[0, 0, 0]}>
+						<mesh>
+							<cylinderGeometry args={[0.045, 0.05, 0.22, 12]} />
+							<meshStandardMaterial color="#f2c21c" roughness={0.25} transparent opacity={0.92} />
+						</mesh>
+						<mesh position={[0, 0.02, 0]}>
+							<cylinderGeometry args={[0.052, 0.052, 0.07, 12]} />
+							<meshStandardMaterial color="#1f4fd1" roughness={0.6} />
+						</mesh>
+						<mesh position={[0, 0.14, 0]}>
+							<cylinderGeometry args={[0.02, 0.03, 0.06, 10]} />
+							<meshStandardMaterial color="#f2c21c" roughness={0.25} />
+						</mesh>
+					</group>
+				)}
 				{pose === 'reading' && (
 					<group position={[0.12, -0.72, 0.08]} rotation={[1.3, 0, -0.4]}>
 						<Box size={[0.36, 0.26, 0.025]} color="#222" />

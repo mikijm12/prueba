@@ -1,0 +1,34 @@
+{
+  "ingenito": "hex",
+  "labels": true,
+  "clima": "lluvia",
+  "musica": "comedia",
+  "props": ["losa"],
+  "fps": 30,
+  "gap": 0.12,
+  "voces": {
+    "ingenito": {"eleven": "WOY6pnQ1WCg0mrOZ54lM"},
+    "junior": {"eleven": "ljWLDJb7OMkYo3VM9z8g"},
+    "teo": {"eleven": "YExhVa4bZONzeingloMX"},
+    "supervisora": {"eleven": "tbfu7H6JPPlpF9clW89V"}
+  },
+  "manual": {
+    "code": "E.060",
+    "area": "CONCRETO ARMADO",
+    "title": "Agua, cemento y lluvia",
+    "drawing": "agua",
+    "stamp": ["AGUA DE MÁS,", "RESISTENCIA DE MENOS"]
+  },
+  "beats": [
+    { "type": "still", "dur": 1.4, "set": "obra-dia", "cam": "OBRA_TRIO", "hook": "Cuando el maestro de obra tiene su propia teoría del concreto 🌧️", "sfx": ["trueno", "gota"], "dropOnHat": true, "teoProp": "gaseosa" },
+    { "type": "line", "who": "junior", "text": "Maestro, está lloviendo… ¿vaciamos igual?", "say": "[nervous] Maestro... está lloviendo... ¿vaciamos igual?", "set": "obra-dia", "cam": "OBRA_TRIO", "hook": "Cuando el maestro de obra tiene su propia teoría del concreto 🌧️", "teoProp": "gaseosa", "juniorBrow": -1 },
+    { "type": "line", "who": "teo", "text": "Claro, inge. Mojadito se seca mejor, como el cebiche.", "say": "[relaxed] Claro, inge. [chuckles] Mojadito se seca mejor, como el cebiche.", "set": "obra-dia", "cam": "OBRA_TRIO", "teoProp": "gaseosa" },
+    { "type": "line", "who": "teo", "text": "Y le echo más agua pa' que corra solito. El concreto también tiene sed, inge.", "say": "[mischievously] Y le echo más agua pa' que corra solito. [laughs] El concreto también tiene sed, inge.", "set": "obra-dia", "cam": "OBRA_TEO", "teoPose": "hose", "sfx": "chorro" },
+    { "type": "still", "dur": 1.3, "set": "obra-dia", "cam": "OBRA_DRAMA", "expr": "surprised", "sfx": "drama", "shake": true, "teoPose": "hose" },
+    { "type": "line", "who": "ingenito", "text": "¿Y de paso le echamos agua bendita, maestro? Porque esa losa va a necesitar milagro.", "say": "[sarcastic] ¿Y de paso le echamos agua bendita, maestro? [laughs] Porque esa losa va a necesitar un milagro.", "set": "obra-dia", "cam": "OBRA_TRIO", "expr": "skeptic", "teoPose": "hose", "tail": 0.9, "sfxEnd": "rimshot" },
+    { "type": "line", "who": "ingenito", "text": "Aquí está la norma, maestro. Dibujadita.", "say": "[confident] Aquí está la norma, maestro. Dibujadita.", "set": "obra-dia", "cam": "OBRA_TRIO", "expr": "happy", "book": true, "overlay": "manual", "overlayFrom": 0.35, "tail": 1.4, "sfx": "golpe" },
+    { "type": "line", "who": "ingenito", "text": "Hoy se tapa la losa y se vacía mañana.", "say": "[firm but friendly] Hoy se tapa la losa, y se vacía mañana.", "set": "obra-dia", "cam": "OBRA_TRIO", "expr": "happy", "rightArm": "point", "teoPose": "hose" },
+    { "type": "still", "dur": 1.8, "set": "obra-dia", "cam": "OBRA_TRIO", "expr": "deadpan", "teoPose": "hide", "caption": "( Don Teo, silbando )", "sfx": "silbido" },
+    { "type": "line", "who": "ingenito", "text": "RNE Ilustrado: porque el concreto no se cura con fe, se cura con norma.", "say": "[cheerful] RNE Ilustrado: porque el concreto no se cura con fe... [laughs] ¡se cura con norma!", "set": "obra-dia", "cam": "OBRA_TRIO", "expr": "happy", "rightArm": "thumbs", "overlay": "end-rne", "lead": 0.3, "tail": 2.4, "sfx": "end" }
+  ]
+}

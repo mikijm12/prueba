@@ -1,6 +1,7 @@
 """Construye la línea de tiempo y la banda sonora de un episodio (episodios/<ep>/guion.json).
 
-1. Sintetiza cada diálogo con las voces peruanas de Microsoft (edge-tts, es-PE-AlexNeural);
+1. Sintetiza cada diálogo con ElevenLabs (si el guion da "eleven": <voice_id>) o con las voces
+   peruanas de Microsoft (edge-tts, es-PE-AlexNeural);
    con VOCES=kokoro usa en cambio voces neuronales locales (sin red).
 2. Procesa la voz: el junior un poco más agudo, Ingenito más grave con un toque metálico suave.
 3. Coloca cada beat en el tiempo y escribe src/episodios/<ep>/timeline.json (planos,
@@ -121,16 +122,69 @@ def synth_kokoro(text, who, path):
     )
 
 
+def synth_eleven(text, who, path):
+    """ElevenLabs (modelo v3, acepta etiquetas de actuación como [laughs] o [sarcastic]).
+    La clave la agrega el proxy del entorno como secreto de red: no va en el código."""
+    import json as _json
+    import urllib.request
+
+    cfg = VOICES[who]
+    body = _json.dumps({
+        "text": text,
+        "model_id": cfg.get("model", "eleven_v3"),
+        "voice_settings": {"stability": cfg.get("stability", 0.5)},
+    }).encode()
+    req = urllib.request.Request(
+        f"https://api.elevenlabs.io/v1/text-to-speech/{cfg['eleven']}?output_format=mp3_44100_128",
+        data=body,
+        headers={"Content-Type": "application/json", "Accept": "audio/mpeg"},
+    )
+    with urllib.request.urlopen(req, timeout=180) as r, open(path, "wb") as f:
+        f.write(r.read())
+
+
+def compress_pauses(x, max_pause=0.22, thr=0.012):
+    """Acorta los silencios internos largos (las voces actuadas hacen pausas dramáticas de más)."""
+    win = int(0.02 * SR)
+    n = len(x) // win
+    loud = np.array([np.abs(x[i * win:(i + 1) * win]).max() > thr for i in range(n)])
+    keep = []
+    run = 0
+    for i in range(n):
+        run = 0 if loud[i] else run + 1
+        if loud[i] or run * win <= max_pause * SR:
+            keep.append(x[i * win:(i + 1) * win])
+    keep.append(x[n * win:])
+    return np.concatenate(keep)
+
+
 def synth(text, who, tmp):
-    raw = os.path.join(tmp, "voz.mp3" if os.environ.get("VOCES", "edge") == "edge" else "voz.wav")
-    if os.environ.get("VOCES", "edge") == "edge":
+    raw = os.path.join(tmp, "voz.mp3")
+    if "eleven" in VOICES[who]:
+        # caché por texto + voz: regenerar el episodio no vuelve a gastar créditos
+        import hashlib
+        import shutil
+
+        key = hashlib.sha1(json.dumps([text, VOICES[who]], sort_keys=True).encode()).hexdigest()[:16]
+        cached = os.path.join(ROOT, "voices", "cache", f"{key}.mp3")
+        if not os.path.exists(cached):
+            os.makedirs(os.path.dirname(cached), exist_ok=True)
+            synth_eleven(text, who, cached)
+        shutil.copy(cached, raw)
+    elif os.environ.get("VOCES", "edge") == "edge":
         synth_edge(text, who, raw)
     else:
+        raw = os.path.join(tmp, "voz.wav")
         synth_kokoro(text, who, raw)
     out = os.path.join(tmp, "proc.wav")
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-ar", str(SR), "-ac", "1", out], check=True)
+    # las voces de ElevenLabs se aceleran un poco (sin cambiar el tono) para dar ritmo de comedia
+    speed = VOICES[who].get("speed", 1.12 if "eleven" in VOICES[who] else 1.0)
+    af = ["-af", f"atempo={speed}"] if speed != 1.0 else []
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, *af, "-ar", str(SR), "-ac", "1", out], check=True)
     x, _ = read_wav(out)
     x = trim_silence(x)
+    if "eleven" in VOICES[who]:
+        x = compress_pauses(x)
     if VOICES[who].get("robot"):
         x = robotize(x)
     return x / max(1e-6, np.abs(x).max()) * 0.9
@@ -291,6 +345,106 @@ def obra_ambiente(dur):
     return out
 
 
+def lluvia(dur):
+    """Lluvia continua: ruido filtrado con gotas sueltas."""
+    n = int(dur * SR)
+    out = lowpass(noise(n), 0.25) * 0.35 + lowpass(noise(n), 0.04) * 0.6
+    t = 0.0
+    while t < dur:
+        place(out, pop(2500 + rng.uniform(-600, 900), 0.03) * rng.uniform(0.05, 0.15), t)
+        t += rng.uniform(0.02, 0.09)
+    return out * env(n, 0.8, 0.8)
+
+
+def trueno(dur=2.6):
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    rumble = lowpass(noise(n), 0.01) * 6
+    crack = lowpass(noise(n), 0.3) * np.exp(-t * 9) * 1.2
+    return (rumble * (1 - np.exp(-t * 6)) * np.exp(-t * 1.2) + crack) * env(n, 0.01, 0.6)
+
+
+def gota():
+    n = int(0.18 * SR)
+    t = np.arange(n) / SR
+    f = 1400 + 900 * np.exp(-t * 40)
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 28)
+
+
+def chorro(dur):
+    n = int(dur * SR)
+    return (lowpass(noise(n), 0.5) - lowpass(noise(n), 0.05)) * env(n, 0.08, 0.2) * 1.5
+
+
+def rimshot():
+    """Ba-dum-tss."""
+    out = np.zeros(int(1.2 * SR))
+    for i, f0 in enumerate((180, 130)):
+        m = int(0.2 * SR)
+        tt = np.arange(m) / SR
+        place(out, np.sin(2 * np.pi * np.cumsum(f0 + 80 * np.exp(-tt * 30)) / SR) * np.exp(-tt * 18), i * 0.16)
+    m = int(0.9 * SR)
+    tt = np.arange(m) / SR
+    place(out, (lowpass(noise(m), 0.9) - lowpass(noise(m), 0.3)) * np.exp(-tt * 4) * 0.8, 0.34)
+    return out
+
+
+def coro(dur=1.4):
+    """Coro celestial corto ("aaah") para cuando sale el manual."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    s = np.zeros(n)
+    for f in (523.3, 659.3, 784.0, 1046.5):
+        vib = 1 + 0.006 * np.sin(2 * np.pi * 5.5 * t)
+        ph = 2 * np.pi * np.cumsum(f * vib) / SR
+        s += np.sin(ph) + 0.4 * np.sin(2 * ph) + 0.2 * np.sin(3 * ph)
+    return s / 8 * env(n, 0.15, 0.5)
+
+
+def golpe():
+    n = int(0.5 * SR)
+    t = np.arange(n) / SR
+    return (np.sin(2 * np.pi * np.cumsum(90 + 120 * np.exp(-t * 25)) / SR) + lowpass(noise(n), 0.4) * 0.6) * np.exp(-t * 9)
+
+
+def silbido(dur=1.6):
+    """Silbido inocente: melodía corta en tono puro."""
+    notas = [988, 1175, 988, 880, 988]
+    out = np.zeros(int(dur * SR))
+    d = dur / len(notas)
+    for i, f in enumerate(notas):
+        m = int(d * SR)
+        tt = np.arange(m) / SR
+        place(out, np.sin(2 * np.pi * f * (1 + 0.01 * np.sin(2 * np.pi * 6 * tt)) * tt) * env(m, 0.03, 0.05), i * d)
+    return out
+
+
+def comedia(total):
+    """Música juguetona: pizzicato saltarín con bajo y platillo suave a 112 bpm."""
+    n = int(total * SR)
+    out = np.zeros(n)
+    beat = 60 / 112
+    melodia = [523, 659, 784, 659, 587, 698, 880, 698, 523, 659, 784, 1046, 988, 784, 659, 587]
+    bajos = [131, 131, 175, 196]
+    k = 0
+    while k * beat / 2 < total:
+        f = melodia[k % len(melodia)]
+        m = int(0.18 * SR)
+        tt = np.arange(m) / SR
+        pluck = (np.sin(2 * np.pi * f * tt) + 0.3 * np.sin(4 * np.pi * f * tt)) * np.exp(-tt * 22)
+        place(out, pluck * 0.07, k * beat / 2)
+        if k % 2 == 0:
+            fb = bajos[(k // 8) % 4]
+            m = int(0.3 * SR)
+            tt = np.arange(m) / SR
+            place(out, np.sin(2 * np.pi * fb * tt) * np.exp(-tt * 8) * 0.12, k * beat / 2)
+        if k % 4 == 2:
+            m = int(0.08 * SR)
+            place(out, np.diff(noise(m + 1)) * np.exp(-np.arange(m) / SR * 60) * 0.03, k * beat / 2)
+        k += 1
+    return out
+
+
 def lofi(total):
     n = int(total * SR)
     out = np.zeros(n)
@@ -353,7 +507,7 @@ def main(ep):
             if "caption" in b:
                 lines.append({"who": "caption", "text": b["caption"], "from": round(start * fps), "to": round((start + dur) * fps)})
         f0, f1 = round(start * fps), round((start + dur) * fps)
-        skip = ("type", "text", "say", "who", "dur", "tail", "caption", "sfx", "overlayFrom", "lead", "chat", "pings")
+        skip = ("type", "text", "say", "who", "dur", "tail", "caption", "sfx", "sfxEnd", "overlayFrom", "lead", "chat", "pings")
         seg = {k: v for k, v in b.items() if k not in skip}
         seg.update({"from": f0, "to": f1})
         if "overlay" in b:
@@ -395,15 +549,24 @@ def main(ep):
             sfx["reveal"] = seg["overlayFrom"]
         elif ov == "manual":
             sfx["manualIn"] = seg["overlayFrom"]
-        if b.get("sfx") == "whoosh":
+        sfx_list = b.get("sfx") if isinstance(b.get("sfx"), list) else [b.get("sfx")]
+        for name in ("trueno", "gota", "rimshot", "golpe", "silbido"):
+            if name in sfx_list:
+                sfx.setdefault(name, []).append(f0)
+        if b.get("sfxEnd") == "rimshot":
+            sfx.setdefault("rimshot", []).append(round((start + lead + talk) * fps))
+        if "chorro" in sfx_list:
+            sfx.setdefault("chorro", []).append([f0, f1])
+        if "whoosh" in sfx_list:
             sfx.setdefault("whoosh", []).append(f0)
-        if b.get("sfx") in ("drama", "tension"):
-            sfx.setdefault(b["sfx"], []).append(f0)
+        for name in ("drama", "tension"):
+            if name in sfx_list:
+                sfx.setdefault(name, []).append(f0)
         if b.get("set") == "obra-dia":
             sfx.setdefault("obraDia", []).append([f0, f1])
-        if b.get("sfx") == "crickets":
+        if "crickets" in sfx_list:
             sfx["crickets"] = [f0, f1]
-        if b.get("sfx") == "end":
+        if "end" in sfx_list:
             sfx["endIn"] = f0
         t += dur
 
@@ -429,7 +592,7 @@ def main(ep):
                 mouth[who + "_shape"][f0 + i] = round(float(sh), 2)
 
     # música con ducking bajo la voz y corte en los grillos
-    music = lofi(total + 0.5)[:n]
+    music = (comedia if g.get("musica") == "comedia" else lofi)(total + 0.5)[:n]
     voice_env = lowpass(np.abs(voices), 0.0008)
     voice_env /= max(1e-6, voice_env.max())
     music *= 1 - 0.7 * np.clip(voice_env * 3, 0, 1)
@@ -472,6 +635,21 @@ def main(ep):
             place(fx, whoosh(0.3) * 0.25, at(s["from"]) - 0.05)
     if "endIn" in sfx:
         place(fx, sting() * 0.25, at(sfx["endIn"]))
+    if g.get("clima") == "lluvia":
+        place(fx, lluvia(total) * 0.22, 0)
+    for f_ in sfx.get("trueno", []):
+        place(fx, trueno() * 0.5, at(f_))
+    for f_ in sfx.get("gota", []):
+        place(fx, gota() * 0.4, at(f_) + 0.35)
+    for f_ in sfx.get("rimshot", []):
+        place(fx, rimshot() * 0.45, at(f_))
+    for f_ in sfx.get("golpe", []):
+        place(fx, golpe() * 0.6, at(f_))
+        place(fx, coro() * 0.35, at(f_) + 0.05)
+    for f_ in sfx.get("silbido", []):
+        place(fx, silbido() * 0.25, at(f_) + 0.2)
+    for a, b in sfx.get("chorro", []):
+        place(fx, chorro(at(b - a)) * 0.3, at(a) + 0.3)
     for w_ in sfx.get("whoosh", []):
         place(fx, whoosh(0.5) * 0.35, at(w_))
     for d_ in sfx.get("drama", []):
@@ -494,7 +672,7 @@ def main(ep):
     timeline = {
         "id": ep, "fps": fps, "durationInFrames": n_frames, "ingenito": g.get("ingenito", "robot"),
         "segments": segments, "lines": lines, "sfx": sfx, "chat": chat,
-        "labels": g.get("labels", False), "manual": g.get("manual"),
+        "labels": g.get("labels", False), "manual": g.get("manual"), "clima": g.get("clima"), "props": g.get("props", []),
     }
     out_dir = os.path.join(ROOT, "src", "episodios", ep)
     os.makedirs(out_dir, exist_ok=True)

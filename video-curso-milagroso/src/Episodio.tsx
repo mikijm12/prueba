@@ -12,7 +12,7 @@ import {EndCard} from './overlays/EndCard';
 import {WhatsAppChat} from './overlays/WhatsAppChat';
 import {ManualPage} from './overlays/ManualPage';
 import {EndCardRNE} from './overlays/EndCardRNE';
-import {DayBackdrop} from './overlays/DayBackdrop';
+import {DayBackdrop, RainOverlay} from './overlays/DayBackdrop';
 import {HookText, PcScreen, TitleCard, NameTag, DramaLines} from './overlays/EpisodeExtras';
 
 const BLUR_OVERLAYS = new Set(['mockup', 'insta-crop', 'insta-reveal', 'chat', 'manual', 'pc']);
@@ -28,12 +28,13 @@ export const Episodio: React.FC<{ep: Episode}> = ({ep}) => {
 			<AbsoluteFill style={{backgroundColor: '#040824'}}>
 				{/* voces, música y efectos generados por scripts/sonido.py */}
 				<Audio src={staticFile(`${ep.timeline.id}/audio.wav`)} />
-				{seg.set === 'obra-dia' ? <DayBackdrop frame={frame} /> : <NightBackdrop frame={frame} cam={seg.cam} />}
+				{seg.set === 'obra-dia' ? <DayBackdrop frame={frame} lluvia={ep.timeline.clima === 'lluvia'} /> : <NightBackdrop frame={frame} cam={seg.cam} />}
 				<AbsoluteFill style={{filter: blurBg ? 'blur(6px)' : undefined}}>
 					<ThreeCanvas width={width} height={height} camera={{fov: 35, near: 0.1, far: 60}} gl={{alpha: true, antialias: true}}>
 						<Scene3D frame={frame} ep={ep} />
 					</ThreeCanvas>
 				</AbsoluteFill>
+				{ep.timeline.clima === 'lluvia' && seg.overlay !== 'end-rne' && <RainOverlay frame={frame} />}
 				{/* viñeta */}
 				<AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 55%, rgba(0,0,0,0) 55%, rgba(0,0,20,0.55) 100%)'}} />
 				{seg.overlay === 'mockup' && <CourseMockup frame={frame} />}

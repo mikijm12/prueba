@@ -1,0 +1,234 @@
+{
+ "id": "ep4",
+ "fps": 30,
+ "durationInFrames": 1255,
+ "ingenito": "hex",
+ "segments": [
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TRIO",
+   "hook": "Cuando el maestro de obra tiene su propia teoría del concreto 🌧️",
+   "dropOnHat": true,
+   "teoProp": "gaseosa",
+   "from": 0,
+   "to": 42
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TRIO",
+   "hook": "Cuando el maestro de obra tiene su propia teoría del concreto 🌧️",
+   "teoProp": "gaseosa",
+   "juniorBrow": -1,
+   "from": 42,
+   "to": 171
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TRIO",
+   "teoProp": "gaseosa",
+   "from": 171,
+   "to": 286
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TEO",
+   "teoPose": "hose",
+   "from": 286,
+   "to": 429
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_DRAMA",
+   "expr": "surprised",
+   "shake": true,
+   "teoPose": "hose",
+   "from": 429,
+   "to": 468
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TRIO",
+   "expr": "skeptic",
+   "teoPose": "hose",
+   "from": 468,
+   "to": 717
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TRIO",
+   "expr": "happy",
+   "book": true,
+   "overlay": "manual",
+   "from": 717,
+   "to": 856,
+   "overlayFrom": 766
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TRIO",
+   "expr": "happy",
+   "rightArm": "point",
+   "teoPose": "hose",
+   "from": 856,
+   "to": 932
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TRIO",
+   "expr": "deadpan",
+   "teoPose": "hide",
+   "from": 932,
+   "to": 986
+  },
+  {
+   "set": "obra-dia",
+   "cam": "OBRA_TRIO",
+   "expr": "happy",
+   "rightArm": "thumbs",
+   "overlay": "end-rne",
+   "from": 986,
+   "to": 1254,
+   "overlayFrom": 986
+  }
+ ],
+ "lines": [
+  {
+   "who": "junior",
+   "text": "Maestro, está lloviendo… ¿vaciamos igual?",
+   "from": 42,
+   "to": 171
+  },
+  {
+   "who": "teo",
+   "text": "Claro, inge. Mojadito se seca mejor, como el cebiche.",
+   "from": 171,
+   "to": 286
+  },
+  {
+   "who": "teo",
+   "text": "Y le echo más agua pa' que corra solito. El concreto también tiene sed, inge.",
+   "from": 286,
+   "to": 429
+  },
+  {
+   "who": "ingenito",
+   "text": "¿Y de paso le echamos agua bendita, maestro? Porque esa losa va a necesitar milagro.",
+   "from": 468,
+   "to": 717
+  },
+  {
+   "who": "ingenito",
+   "text": "Aquí está la norma, maestro. Dibujadita.",
+   "from": 717,
+   "to": 856
+  },
+  {
+   "who": "ingenito",
+   "text": "Hoy se tapa la losa y se vacía mañana.",
+   "from": 856,
+   "to": 932
+  },
+  {
+   "who": "caption",
+   "text": "( Don Teo, silbando )",
+   "from": 932,
+   "to": 986
+  },
+  {
+   "who": "ingenito",
+   "text": "RNE Ilustrado: porque el concreto no se cura con fe, se cura con norma.",
+   "from": 995,
+   "to": 1254
+  }
+ ],
+ "sfx": {
+  "comments": [],
+  "pings": [],
+  "typing": [],
+  "sent": [],
+  "trueno": [
+   0
+  ],
+  "gota": [
+   0
+  ],
+  "obraDia": [
+   [
+    0,
+    42
+   ],
+   [
+    42,
+    171
+   ],
+   [
+    171,
+    286
+   ],
+   [
+    286,
+    429
+   ],
+   [
+    429,
+    468
+   ],
+   [
+    468,
+    717
+   ],
+   [
+    717,
+    856
+   ],
+   [
+    856,
+    932
+   ],
+   [
+    932,
+    986
+   ],
+   [
+    986,
+    1254
+   ]
+  ],
+  "chorro": [
+   [
+    286,
+    429
+   ]
+  ],
+  "drama": [
+   429
+  ],
+  "rimshot": [
+   687
+  ],
+  "manualIn": 766,
+  "golpe": [
+   717
+  ],
+  "silbido": [
+   932
+  ],
+  "endIn": 986
+ },
+ "chat": [],
+ "labels": true,
+ "manual": {
+  "code": "E.060",
+  "area": "CONCRETO ARMADO",
+  "title": "Agua, cemento y lluvia",
+  "drawing": "agua",
+  "stamp": [
+   "AGUA DE MÁS,",
+   "RESISTENCIA DE MENOS"
+  ]
+ },
+ "clima": "lluvia",
+ "props": [
+  "losa"
+ ]
+}
